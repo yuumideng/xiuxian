@@ -2,7 +2,6 @@
   <div class="battle-stats bg-white rounded p-3">
     <div class="flex items-center justify-between mb-2">
       <h3 class="text-sm font-medium">战斗数据</h3>
-      <span class="text-xs bg-gray-800 text-white px-2 py-0.5 rounded">暗能</span>
     </div>
 
     <div class="rounded p-2 bg-gray-50">

@@ -1,5 +1,5 @@
 <template>
-  <div class="home-page min-h-screen bg-gray-100 pb-4">
+  <div class="home-page min-h-screen bg-gray-100 pb-24">
     <!-- 顶部资源栏 -->
     <div class="p-2 space-y-1">
       <TopBar />

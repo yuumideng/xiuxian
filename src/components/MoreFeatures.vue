@@ -83,41 +83,41 @@
         </GameButton>
       </div>
 
-      <!-- 第二行：4个双字按钮 -->
-      <div class="grid grid-cols-4 gap-1.5">
-        <GameButton color="dark" custom-class="flex-col">
-          <span>坊市</span>
-          <span>系统</span>
-        </GameButton>
-        <GameButton color="dark" custom-class="flex-col">
-          <span>离线</span>
-          <span>挂机</span>
-        </GameButton>
-        <GameButton color="dark" custom-class="flex-col">
-          <span>轮回</span>
-          <span>重修</span>
-        </GameButton>
-        <GameButton color="dark" custom-class="flex-col">
-          <span>成就</span>
-          <span>系统</span>
-        </GameButton>
-      </div>
+    </div>
+  </div>
 
-      <!-- 第三行：2个按钮 -->
-      <div class="grid grid-cols-2 gap-1.5">
-        <GameButton color="dark" custom-class="flex-col">
-          <span>游戏</span>
-          <span>设置</span>
-        </GameButton>
-        <GameButton color="red" custom-class="flex-col">
-          <span>购买</span>
-          <span>资源</span>
-        </GameButton>
-      </div>
+  <!-- 底部固定按钮区块 -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3">
+    <!-- 6个按钮同一行 -->
+    <div class="grid grid-cols-6 gap-1.5 mb-3">
+      <GameButton color="dark" custom-class="flex-col">
+        <span>坊市</span>
+        <span>系统</span>
+      </GameButton>
+      <GameButton color="dark" custom-class="flex-col">
+        <span>离线</span>
+        <span>挂机</span>
+      </GameButton>
+      <GameButton color="dark" custom-class="flex-col">
+        <span>轮回</span>
+        <span>重修</span>
+      </GameButton>
+      <GameButton color="dark" custom-class="flex-col">
+        <span>成就</span>
+        <span>系统</span>
+      </GameButton>
+      <GameButton color="dark" custom-class="flex-col">
+        <span>游戏</span>
+        <span>设置</span>
+      </GameButton>
+      <GameButton color="red" custom-class="flex-col">
+        <span>购买</span>
+        <span>资源</span>
+      </GameButton>
     </div>
 
-    <!-- 底部信息 -->
-    <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
+    <!-- 底部版本信息 -->
+    <div class="flex items-center justify-between text-xs text-gray-400">
       <span>AD2F39_2E9605_7A60EF</span>
       <span>9.23 Fates</span>
       <span>ios VIP v10.24(3)</span>
