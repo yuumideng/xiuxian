@@ -12,7 +12,6 @@
           </div>
           <div class="bg-gray-800 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
             历练信息
-            <span class="bg-gray-700 px-1 rounded text-xs">暗能</span>
           </div>
         </div>
         
@@ -50,54 +49,58 @@
 
     <!-- 修为和战斗经验 -->
     <div class="space-y-1 mb-2">
-      <div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
-        <span>修为：795.83万亿⁵/2.45万亿⁵</span>
-        <span class="text-green-600">+3.7万亿⁵/10天</span>
-      </div>
-      <div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
-        <span>战斗经验：789.09万亿⁵/2.11万亿⁵</span>
-        <span class="text-green-600">+3.69万亿⁵/10天</span>
-      </div>
+      <div>
+				<div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
+					<span>修为：795.83万亿⁵/2.45万亿⁵</span>
+					<span class="text-green-600">+3.7万亿⁵/10天</span>
+				</div>
+				<div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
+					<span>战斗经验：789.09万亿⁵/2.11万亿⁵</span>
+					<span class="text-green-600">+3.69万亿⁵/10天</span>
+				</div>
+			</div>
+
     </div>
 
     <!-- 操作按钮 - 同一行,左边4个小按钮,右边2个大按钮 -->
-    <div class="flex gap-2">
+    <div class="flex gap-2 h-10">
       <!-- 左侧：4个小按钮 -->
       <div class="grid grid-cols-4 gap-1.5 flex-1">
-        <button class="bg-gray-800 text-white rounded py-2.5 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="dark" custom-class="flex-col">
           <span>仙人</span>
           <span>指路</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2.5 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>强化</span>
           <span>经脉</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2.5 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>炼制</span>
           <span>丹药</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2.5 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>神器</span>
           <span>遗迹</span>
-        </button>
+        </GameButton>
       </div>
 
       <!-- 右侧：2个劫按钮 -->
       <div class="grid grid-cols-2 gap-1.5 flex-1">
-        <button class="bg-red-500 text-white rounded py-2.5 text-xs hover:bg-red-600 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="red" custom-class="flex-col">
           <span>天道轮回劫</span>
           <span class="text-xs mt-0.5">第1163劫</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2.5 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col !px-0.5">
           <span>鸿蒙元尊心魔劫</span>
           <span class="text-xs mt-0.5">第638劫</span>
-        </button>
+        </GameButton>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import GameButton from './common/GameButton.vue'
 </script>
 
 <style scoped>

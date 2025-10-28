@@ -5,62 +5,114 @@
     <div class="space-y-1.5">
       <!-- 第一行：8个单字按钮 -->
       <div class="grid grid-cols-8 gap-1.5">
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          背包
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          仙战
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          抢夺
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          试炼
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          宗门
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          世界
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          收服
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex items-center justify-center">
-          征战
-        </button>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>背包</span>
+          <span>系统</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>仙战</span>
+          <span>榜单</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>抢夺</span>
+          <span>灵脉</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>试炼</span>
+          <span>塔</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>宗门</span>
+          <span>系统</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>世界</span>
+          <span>Boss</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>收服</span>
+          <span>灵兽</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>征战</span>
+          <span>事件</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>天骄</span>
+          <span>战</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>仙魔</span>
+          <span>入侵</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>星罗</span>
+          <span>棋道阵</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>阵法</span>
+          <span>系统</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>仙缘</span>
+          <span>秘境</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>洞府</span>
+          <span>系统</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>九霄</span>
+          <span>通天塔</span>
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
+          <span>玩家</span>
+          <span>排名</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>奇遇</span>
+          <span>系统</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>遗忘</span>
+          <span>之虚</span>
+        </GameButton>
+                <GameButton color="dark" custom-class="flex-col">
+          <span>轮回</span>
+          <span>洞天</span>
+        </GameButton>
       </div>
 
       <!-- 第二行：4个双字按钮 -->
       <div class="grid grid-cols-4 gap-1.5">
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="dark" custom-class="flex-col">
           <span>坊市</span>
           <span>系统</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>离线</span>
           <span>挂机</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>轮回</span>
           <span>重修</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>成就</span>
           <span>系统</span>
-        </button>
+        </GameButton>
       </div>
 
       <!-- 第三行：2个按钮 -->
       <div class="grid grid-cols-2 gap-1.5">
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="dark" custom-class="flex-col">
           <span>游戏</span>
           <span>设置</span>
-        </button>
-        <button class="bg-red-500 text-white rounded py-2 text-xs hover:bg-red-600 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="red" custom-class="flex-col">
           <span>购买</span>
           <span>资源</span>
-        </button>
+        </GameButton>
       </div>
     </div>
 
@@ -74,6 +126,7 @@
 </template>
 
 <script setup>
+import GameButton from './common/GameButton.vue'
 </script>
 
 <style scoped>

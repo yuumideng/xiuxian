@@ -6,48 +6,49 @@
     <div class="flex gap-3">
       <!-- 功法4个按钮 -->
       <div class="grid grid-cols-4 gap-1.5 flex-1">
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="dark" custom-class="flex-col">
           <span>修炼</span>
           <span>功法</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>本命</span>
           <span>功法</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>自创</span>
           <span>功法</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>功法</span>
           <span>列表</span>
-        </button>
+        </GameButton>
       </div>
 
       <!-- 装备4个按钮 -->
       <div class="grid grid-cols-4 gap-1.5 flex-1">
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        <GameButton color="dark" custom-class="flex-col">
           <span>佩戴</span>
           <span>装备</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>本命</span>
           <span>法宝</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>炼制</span>
           <span>法宝</span>
-        </button>
-        <button class="bg-gray-800 text-white rounded py-2 text-xs hover:bg-gray-700 flex flex-col items-center justify-center leading-tight">
+        </GameButton>
+        <GameButton color="dark" custom-class="flex-col">
           <span>装备</span>
           <span>列表</span>
-        </button>
+        </GameButton>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import GameButton from './common/GameButton.vue'
 </script>
 
 <style scoped>
