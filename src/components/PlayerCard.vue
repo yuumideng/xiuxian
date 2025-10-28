@@ -19,10 +19,10 @@
 
         <!-- 角色属性 -->
         <div class="space-y-0.5 text-xs">
-          <div class="text-purple-500">姓名：祁同伟</div>
-          <div class="text-gray-700">年龄：<span class="text-blue-600">39.63亿⁵</span></div>
-          <div class="text-gray-700">鸿蒙界：鸿蒙元尊大圆满</div>
-          <div class="text-gray-700">战斗力：<span class="text-orange-500">9.72亿⁵</span></div>
+          <div class="text-purple-500">姓名：{{ gameStore.player.name }}</div>
+          <div class="text-gray-700">年龄：<span class="text-blue-600">{{ gameStore.player.age }}岁</span></div>
+          <div class="text-gray-700">{{ currentWorld }}：{{ currentRealm?.fullName || '未知境界' }}</div>
+          <div class="text-gray-700">战斗力：<span class="text-orange-500">{{ formatNumber(calculatePower) }}</span></div>
         </div>
       </div>
 
@@ -50,17 +50,42 @@
     <!-- 修为和战斗经验 -->
     <div class="space-y-1 mb-2">
       <div>
-        <div
-          class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between"
-        >
-          <span>修为：795.83万亿⁵/2.45万亿⁵</span>
-          <span class="text-green-600">+3.7万亿⁵/10天</span>
+        <!-- 修为进度条 -->
+        <div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span>修为：{{ formatNumber(gameStore.player.exp) }}/{{ formatNumber(gameStore.currentRequirements.exp) }}</span>
+            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.exp) }}/秒</span>
+          </div>
+          <div class="w-full bg-teal-200 rounded-full h-1">
+            <div 
+              class="bg-teal-500 h-1 rounded-full transition-all duration-300" 
+              :style="{ width: gameStore.expProgress + '%' }"
+            ></div>
+          </div>
         </div>
-        <div
-          class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between"
-        >
-          <span>战斗经验：789.09万亿⁵/2.11万亿⁵</span>
-          <span class="text-green-600">+3.69万亿⁵/10天</span>
+        
+        <!-- 战斗经验进度条 -->
+        <div class="bg-orange-100 text-orange-700 px-3 py-1.5 rounded text-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span>战斗经验：{{ formatNumber(gameStore.player.combat) }}/{{ formatNumber(gameStore.currentRequirements.combat) }}</span>
+            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.combat) }}/秒</span>
+          </div>
+          <div class="w-full bg-orange-200 rounded-full h-1">
+            <div 
+              class="bg-orange-500 h-1 rounded-full transition-all duration-300" 
+              :style="{ width: gameStore.combatProgress + '%' }"
+            ></div>
+          </div>
+        </div>
+        
+        <!-- 突破按钮 -->
+        <div v-if="gameStore.canBreakthrough" class="mt-2">
+          <button 
+            @click="breakthrough"
+            class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+          >
+            🌟 突破至{{ gameStore.nextRealm?.fullName || '未知境界' }}
+          </button>
         </div>
       </div>
     </div>
@@ -103,7 +128,38 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useGameStore } from '@/store/gameState.js'
+import { getWorldByLevel } from '@/data/realms.js'
 import GameButton from './common/GameButton.vue'
+
+const gameStore = useGameStore()
+
+// 计算属性
+const currentRealm = computed(() => gameStore.currentRealm)
+const currentWorld = computed(() => getWorldByLevel(gameStore.player.level))
+
+// 计算战斗力
+const calculatePower = computed(() => {
+  return gameStore.player.level * 100 + gameStore.player.combat + gameStore.player.exp * 0.1
+})
+
+// 数字格式化函数
+const formatNumber = (num) => {
+  if (num < 1000) return Math.floor(num).toString()
+  if (num < 1000000) return (num / 1000).toFixed(1) + 'K'
+  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B'
+  return (num / 1000000000000).toFixed(1) + 'T'
+}
+
+// 突破功能
+const breakthrough = () => {
+  const success = gameStore.breakthrough()
+  if (success) {
+    console.log(`成功突破至${gameStore.currentRealm.fullName}!`)
+  }
+}
 </script>
 
 <style scoped></style>

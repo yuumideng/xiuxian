@@ -22,6 +22,27 @@ export const useGameStore = defineStore('game', {
       expSpeed: 10, // 修为增长速度/秒
       combatSpeed: 5, // 战斗经验增长速度/秒
       gameSpeed: 1, // 游戏整体速度倍率
+      
+      // 天赋属性
+      talents: {
+        qigan: 100, // 气感
+        shishi: 100, // 神识
+        gengu: 100, // 根骨
+        wuxing: 100, // 悟性
+        jiyuan: 100 // 机缘
+      },
+      
+      // 灵根属性
+      spiritualRoots: {
+        jin: 50, // 金灵根
+        mu: 50, // 木灵根
+        shui: 50, // 水灵根
+        huo: 50, // 火灵根
+        tu: 50, // 土灵根
+        feng: 50, // 风灵根
+        lei: 50, // 雷灵根
+        guang: 100 // 光灵根
+      }
     },
     
     // 游戏状态

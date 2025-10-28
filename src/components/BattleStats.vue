@@ -6,19 +6,51 @@
 
     <div class="rounded p-2 bg-gray-50">
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-700">
-        <div>血量：1.94亿⁵</div>
-        <div>暴击：1.92亿⁵</div>
-        <div>攻击：3887.9万亿⁴</div>
-        <div>韧性：1.87亿⁵</div>
-        <div>防御：1944.24万亿⁴</div>
-        <div>闪避：3615.14万亿⁴</div>
-        <div>速度：1.91亿⁴</div>
-        <div>命中：1.81亿⁵</div>
+        <div>血量：{{ formatNumber(battleStats.hp) }}</div>
+        <div>暴击：{{ formatNumber(battleStats.crit) }}</div>
+        <div>攻击：{{ formatNumber(battleStats.attack) }}</div>
+        <div>韧性：{{ formatNumber(battleStats.toughness) }}</div>
+        <div>防御：{{ formatNumber(battleStats.defense) }}</div>
+        <div>闪避：{{ formatNumber(battleStats.dodge) }}</div>
+        <div>速度：{{ formatNumber(battleStats.speed) }}</div>
+        <div>命中：{{ formatNumber(battleStats.hit) }}</div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+import { useGameStore } from '@/store/gameState.js'
+
+const gameStore = useGameStore()
+
+// 计算战斗属性(基于境界和战斗经验)
+const battleStats = computed(() => {
+  const level = gameStore.player.level
+  const combat = gameStore.player.combat
+  const baseMultiplier = Math.pow(1.5, level - 1)
+  
+  return {
+    hp: Math.floor((1000 + combat * 0.5) * baseMultiplier),
+    attack: Math.floor((500 + combat * 0.8) * baseMultiplier),
+    defense: Math.floor((300 + combat * 0.6) * baseMultiplier),
+    speed: Math.floor((100 + combat * 0.2) * baseMultiplier),
+    crit: Math.floor((200 + combat * 0.3) * baseMultiplier),
+    hit: Math.floor((150 + combat * 0.4) * baseMultiplier),
+    dodge: Math.floor((120 + combat * 0.35) * baseMultiplier),
+    toughness: Math.floor((180 + combat * 0.25) * baseMultiplier)
+  }
+})
+
+// 数字格式化函数
+const formatNumber = (num) => {
+  if (num < 1000) return Math.floor(num).toString()
+  if (num < 1000000) return (num / 1000).toFixed(1) + 'K'
+  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B'
+  return (num / 1000000000000).toFixed(1) + 'T'
+}
+</script>
 
 <style scoped></style>
