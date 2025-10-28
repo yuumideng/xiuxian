@@ -50,6 +50,7 @@ export const useGameStore = defineStore('game', {
       isOnline: true, // 是否在线
       lastOfflineTime: null, // 上次离线时间
       totalPlayTime: 0, // 总游戏时间(秒)
+      timeProgress: 0, // 时间流逝进度 (0-100, 每秒增加13%)
     },
     
     // 挂机状态
@@ -94,12 +95,17 @@ export const useGameStore = defineStore('game', {
              state.player.combat >= requirements.combat
     },
     
-    // 实际速度(考虑游戏速度倍率)
-    actualSpeeds: (state) => ({
-      spiritStone: state.player.spiritStoneSpeed * state.player.gameSpeed,
-      exp: state.player.expSpeed * state.player.gameSpeed,
-      combat: state.player.combatSpeed * state.player.gameSpeed
-    })
+    // 实际速度(考虑游戏速度倍率和挂机状态)
+    actualSpeeds: (state) => {
+      // 挂机状态下获得100%收益，非挂机状态下获得50%收益
+      const idleMultiplier = state.idleState.isIdle ? 1.0 : 0.5
+      
+      return {
+        spiritStone: Math.floor(state.player.spiritStoneSpeed * state.player.gameSpeed * idleMultiplier),
+        exp: Math.floor(state.player.expSpeed * state.player.gameSpeed * idleMultiplier),
+        combat: Math.floor(state.player.combatSpeed * state.player.gameSpeed * idleMultiplier)
+      }
+    }
   },
   
   actions: {
@@ -111,21 +117,24 @@ export const useGameStore = defineStore('game', {
     
     // 停止挂机
     stopIdle() {
-      if (this.idleState.isIdle) {
-        const idleTime = (Date.now() - this.idleState.startTime) / 1000
-        this.processIdleGains(idleTime)
-      }
       this.idleState.isIdle = false
       this.idleState.startTime = null
     },
     
-    // 处理挂机收益
-    processIdleGains(seconds) {
+    // 处理游戏收益(每秒调用)
+    processGameGains(seconds) {
       const gains = this.calculateGains(seconds)
       
       this.player.spiritStone += gains.spiritStone
       this.player.exp += gains.exp
       this.player.combat += gains.combat
+      
+      // 更新时间进度 (每秒增加13%)
+      this.gameState.timeProgress += 13 * seconds * this.player.gameSpeed
+      // 进度条可以超过100%，通过取模实现循环效果
+      if (this.gameState.timeProgress >= 100) {
+        this.gameState.timeProgress = this.gameState.timeProgress % 100
+      }
       
       // 检查是否可以自动突破
       this.checkAutoBreakthrough()
@@ -199,7 +208,7 @@ export const useGameStore = defineStore('game', {
       // 计算离线收益
       const offlineResult = this.calculateOfflineGains()
       if (offlineResult) {
-        this.processIdleGains(offlineResult.time)
+        this.processGameGains(offlineResult.time)
       }
       
       this.gameState.lastOfflineTime = null

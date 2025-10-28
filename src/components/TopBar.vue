@@ -18,20 +18,23 @@
     </div>
 
     <!-- 游戏时间 -->
-    <div class="bg-teal-100 rounded px-3 py-1.5 flex items-center justify-between text-xs">
-      <div class="text-gray-700">
+    <div class="bg-white rounded px-3 py-1.5 flex items-center justify-between text-xs relative overflow-hidden">
+      <!-- 时间流逝进度条背景 -->
+      <div 
+        class="absolute inset-0 bg-teal-100"
+        :style="{ width: gameStore.gameState.timeProgress + '%' }"
+      ></div>
+      
+      <!-- 内容层 -->
+      <div class="relative z-10 text-gray-700">
         第<span class="font-medium">{{ gameStore.player.age }}</span>岁
         <span class="text-gray-500">(速度x{{ gameStore.player.gameSpeed }})</span>
       </div>
-      <div class="flex items-center gap-2">
-        <button 
-          class="w-6 h-6 rounded-full border flex items-center justify-center"
-          :class="gameStore.idleState.isIdle ? 'border-green-400' : 'border-red-400'"
-        >
-          <span class="text-xs" :class="gameStore.idleState.isIdle ? 'text-green-500' : 'text-red-500'">
-            {{ gameStore.idleState.isIdle ? '挂机中' : '已暂停' }}
+      <div class="relative z-10 flex items-center gap-2">
+
+                  <span v-if="!gameStore.idleState.isIdle" class="text-xs" :class="text-red-500">
+          已暂停
           </span>
-        </button>
         <button
           class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center"
           @click="toggleIdle"
