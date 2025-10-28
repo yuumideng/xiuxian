@@ -1,7 +1,7 @@
 <template>
   <div class="more-features bg-white rounded p-3">
     <h3 class="text-sm font-medium mb-2">更多功能</h3>
-    
+
     <div class="space-y-1.5">
       <!-- 第一行：8个单字按钮 -->
       <div class="grid grid-cols-8 gap-1.5">
@@ -37,31 +37,31 @@
           <span>征战</span>
           <span>事件</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>天骄</span>
           <span>战</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>仙魔</span>
           <span>入侵</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>星罗</span>
           <span>棋道阵</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>阵法</span>
           <span>系统</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>仙缘</span>
           <span>秘境</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>洞府</span>
           <span>系统</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>九霄</span>
           <span>通天塔</span>
         </GameButton>
@@ -69,15 +69,15 @@
           <span>玩家</span>
           <span>排名</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>奇遇</span>
           <span>系统</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>遗忘</span>
           <span>之虚</span>
         </GameButton>
-                <GameButton color="dark" custom-class="flex-col">
+        <GameButton color="dark" custom-class="flex-col">
           <span>轮回</span>
           <span>洞天</span>
         </GameButton>
@@ -129,5 +129,4 @@
 import GameButton from './common/GameButton.vue'
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -1,7 +1,7 @@
 <template>
   <div class="skill-equipment bg-white rounded p-3">
     <h3 class="text-sm font-medium mb-2">功法&装备</h3>
-    
+
     <!-- 8个按钮在同一行,中间有间隔 -->
     <div class="flex gap-3">
       <!-- 功法4个按钮 -->
@@ -51,5 +51,4 @@
 import GameButton from './common/GameButton.vue'
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

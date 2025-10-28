@@ -6,7 +6,9 @@
       <div class="bg-white rounded p-3">
         <div class="flex flex-col items-center mb-2">
           <div class="relative mb-2">
-            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden">
+            <div
+              class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden"
+            >
               <div class="text-4xl">🧘</div>
             </div>
           </div>
@@ -14,7 +16,7 @@
             历练信息
           </div>
         </div>
-        
+
         <!-- 角色属性 -->
         <div class="space-y-0.5 text-xs">
           <div class="text-purple-500">姓名：祁同伟</div>
@@ -26,10 +28,8 @@
 
       <!-- 右侧：历练区域 -->
       <div class="bg-white rounded p-3">
-        <div class="text-xs text-gray-600 mb-3">
-          历练区域：鸿蒙平原(第220/220层)
-        </div>
-        
+        <div class="text-xs text-gray-600 mb-3">历练区域：鸿蒙平原(第220/220层)</div>
+
         <!-- 秘境挑战 -->
         <div class="bg-gray-800 text-white rounded p-2">
           <div class="text-xs mb-1">鸿蒙秘境(进入机会966天)</div>
@@ -40,7 +40,7 @@
           <div class="flex items-center justify-between">
             <div class="text-xs text-green-400">灵石:8282.37万亿⁴</div>
             <button class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs leading-tight">
-              查看<br>奖励
+              查看<br />奖励
             </button>
           </div>
         </div>
@@ -50,16 +50,19 @@
     <!-- 修为和战斗经验 -->
     <div class="space-y-1 mb-2">
       <div>
-				<div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
-					<span>修为：795.83万亿⁵/2.45万亿⁵</span>
-					<span class="text-green-600">+3.7万亿⁵/10天</span>
-				</div>
-				<div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between">
-					<span>战斗经验：789.09万亿⁵/2.11万亿⁵</span>
-					<span class="text-green-600">+3.69万亿⁵/10天</span>
-				</div>
-			</div>
-
+        <div
+          class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between"
+        >
+          <span>修为：795.83万亿⁵/2.45万亿⁵</span>
+          <span class="text-green-600">+3.7万亿⁵/10天</span>
+        </div>
+        <div
+          class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs flex items-center justify-between"
+        >
+          <span>战斗经验：789.09万亿⁵/2.11万亿⁵</span>
+          <span class="text-green-600">+3.69万亿⁵/10天</span>
+        </div>
+      </div>
     </div>
 
     <!-- 操作按钮 - 同一行,左边4个小按钮,右边2个大按钮 -->
@@ -103,5 +106,4 @@
 import GameButton from './common/GameButton.vue'
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

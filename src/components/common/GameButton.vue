@@ -1,5 +1,5 @@
 <template>
-  <button 
+  <button
     :class="[
       'rounded h-10 text-xs flex items-center justify-center leading-none transition-colors',
       colorClass,
@@ -25,7 +25,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['click'])
+defineEmits(['click'])
 
 const colorClass = computed(() => {
   const colors = {

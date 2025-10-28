@@ -34,5 +34,4 @@ import SkillEquipment from '@/components/SkillEquipment.vue'
 import MoreFeatures from '@/components/MoreFeatures.vue'
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
