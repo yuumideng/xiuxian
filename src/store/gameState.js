@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { getRealmByLevel, getRealmRequirements } from '@/data/realms.js'
+import { calculateExpGrowthRate, calculateCombatGrowthRate, getGrowthRateDetails } from '@/utils/growthCalculator.js'
 
 export const useGameStore = defineStore('game', {
   state: () => ({
@@ -19,8 +20,8 @@ export const useGameStore = defineStore('game', {
       
       // 速度属性
       spiritStoneSpeed: 1, // 灵石获取速度/秒
-      expSpeed: 10, // 修为增长速度/秒
-      combatSpeed: 5, // 战斗经验增长速度/秒
+      baseExpSpeed: 1, // 基础修为增长速度/秒
+      baseCombatSpeed: 1, // 基础战斗经验增长速度/秒
       gameSpeed: 1, // 游戏整体速度倍率
       
       // 天赋属性
@@ -101,11 +102,20 @@ export const useGameStore = defineStore('game', {
       // 暂停状态下收益为0，否则获得100%收益
       const pauseMultiplier = state.gameState.isPaused ? 0 : 1.0
       
+      // 使用新的增长速率计算公式
+      const calculatedExpSpeed = calculateExpGrowthRate(state.player, state.player.baseExpSpeed)
+      const calculatedCombatSpeed = calculateCombatGrowthRate(state.player, state.player.baseCombatSpeed)
+      
       return {
         spiritStone: Math.floor(state.player.spiritStoneSpeed * state.player.gameSpeed * pauseMultiplier),
-        exp: Math.floor(state.player.expSpeed * state.player.gameSpeed * pauseMultiplier),
-        combat: Math.floor(state.player.combatSpeed * state.player.gameSpeed * pauseMultiplier)
+        exp: Math.floor(calculatedExpSpeed * state.player.gameSpeed * pauseMultiplier),
+        combat: Math.floor(calculatedCombatSpeed * state.player.gameSpeed * pauseMultiplier)
       }
+    },
+    
+    // 增长速率详细信息
+    growthRateDetails: (state) => {
+      return getGrowthRateDetails(state.player)
     }
   },
   
@@ -194,8 +204,8 @@ export const useGameStore = defineStore('game', {
       this.player.age += Math.floor(Math.random() * 10) + 1
       
       // 属性提升(简单的线性增长)
-      this.player.expSpeed = Math.floor(this.player.expSpeed * 1.2)
-      this.player.combatSpeed = Math.floor(this.player.combatSpeed * 1.15)
+      this.player.baseExpSpeed = Math.floor(this.player.baseExpSpeed * 1.2)
+      this.player.baseCombatSpeed = Math.floor(this.player.baseCombatSpeed * 1.15)
       this.player.spiritStoneSpeed = Math.floor(this.player.spiritStoneSpeed * 1.1)
       
       return true
@@ -253,6 +263,14 @@ export const useGameStore = defineStore('game', {
           const data = JSON.parse(saveData)
           this.player = { ...this.player, ...data.player }
           this.gameState = { ...this.gameState, ...data.gameState }
+          
+          // 兼容旧存档：将旧的速度属性转换为新的基础速度属性
+          if (data.player.expSpeed && !data.player.baseExpSpeed) {
+            this.player.baseExpSpeed = 1 // 重置为基础值，让新公式计算
+          }
+          if (data.player.combatSpeed && !data.player.baseCombatSpeed) {
+            this.player.baseCombatSpeed = 1 // 重置为基础值，让新公式计算
+          }
           
           // 如果有离线时间,设置为离线状态
           if (data.saveTime) {

@@ -81,8 +81,8 @@
         <!-- 突破按钮 -->
         <div v-if="gameStore.canBreakthrough" class="mt-2">
           <button 
-            @click="breakthrough"
             class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+            @click="breakthrough"
           >
             🌟 突破至{{ gameStore.nextRealm?.fullName || '未知境界' }}
           </button>
@@ -131,6 +131,7 @@
 import { computed } from 'vue'
 import { useGameStore } from '@/store/gameState.js'
 import { getWorldByLevel } from '@/data/realms.js'
+import { formatNumber } from '@/utils/numberFormatter.js'
 import GameButton from './common/GameButton.vue'
 
 const gameStore = useGameStore()
@@ -144,14 +145,7 @@ const calculatePower = computed(() => {
   return gameStore.player.level * 100 + gameStore.player.combat + gameStore.player.exp * 0.1
 })
 
-// 数字格式化函数
-const formatNumber = (num) => {
-  if (num < 1000) return Math.floor(num).toString()
-  if (num < 1000000) return (num / 1000).toFixed(1) + 'K'
-  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M'
-  if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B'
-  return (num / 1000000000000).toFixed(1) + 'T'
-}
+
 
 // 突破功能
 const breakthrough = () => {

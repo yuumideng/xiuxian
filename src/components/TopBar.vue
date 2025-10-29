@@ -70,17 +70,11 @@
 
 <script setup>
 import { useGameStore } from '@/store/gameState.js'
+import { formatNumber } from '@/utils/numberFormatter.js'
 
 const gameStore = useGameStore()
 
-// 数字格式化函数
-const formatNumber = (num) => {
-  if (num < 1000) return num.toString()
-  if (num < 1000000) return (num / 1000).toFixed(1) + 'K'
-  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M'
-  if (num < 1000000000000) return (num / 1000000000).toFixed(1) + 'B'
-  return (num / 1000000000000).toFixed(1) + 'T'
-}
+
 
 // 切换暂停状态
 const togglePause = () => {
