@@ -8,10 +8,10 @@
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">天赋</span>
           <button
-            class="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center text-sm"
+            class="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center text-sm relative"
             @click="upgradeTalents"
           >
-            +
+            <span class="absolute inset-0 flex items-center justify-center text-center leading-none">+</span>
           </button>
         </div>
         <div class="space-y-0.5 text-xs text-gray-700">
@@ -28,10 +28,10 @@
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-gray-200 px-2 py-0.5 rounded">灵根</span>
           <button
-            class="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center text-sm"
+            class="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center text-sm relative"
             @click="upgradeSpiritualRoots"
           >
-            +
+            <span class="absolute inset-0 flex items-center justify-center text-center leading-none">+</span>
           </button>
         </div>
         <div class="bg-gray-100 p-2 rounded text-xs">

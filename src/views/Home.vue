@@ -41,7 +41,7 @@ let gameLoop = null
 // 游戏主循环
 const startGameLoop = () => {
   gameLoop = setInterval(() => {
-    // 每秒更新一次游戏状态(无论是否挂机都会增长)
+    // 每秒调用游戏收益处理（内部会检查暂停状态）
     gameStore.processGameGains(1)
     
     // 自动保存(每10秒)
@@ -63,11 +63,6 @@ const stopGameLoop = () => {
 onMounted(() => {
   // 加载游戏数据
   gameStore.loadGame()
-  
-  // 自动开始挂机(如果之前没有挂机状态)
-  if (!gameStore.idleState.isIdle) {
-    gameStore.startIdle()
-  }
   
   // 启动游戏循环
   startGameLoop()

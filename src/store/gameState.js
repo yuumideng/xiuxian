@@ -51,11 +51,12 @@ export const useGameStore = defineStore('game', {
       lastOfflineTime: null, // 上次离线时间
       totalPlayTime: 0, // 总游戏时间(秒)
       timeProgress: 0, // 时间流逝进度 (0-100, 每秒增加13%)
+      isPaused: false, // 是否暂停游戏
     },
     
-    // 挂机状态
+    // 挂机状态 (保留兼容性，但不再影响收益)
     idleState: {
-      isIdle: false, // 是否正在挂机
+      isIdle: true, // 默认挂机状态
       startTime: null, // 开始挂机时间
     }
   }),
@@ -95,27 +96,42 @@ export const useGameStore = defineStore('game', {
              state.player.combat >= requirements.combat
     },
     
-    // 实际速度(考虑游戏速度倍率和挂机状态)
+    // 实际速度(考虑游戏速度倍率和暂停状态)
     actualSpeeds: (state) => {
-      // 挂机状态下获得100%收益，非挂机状态下获得50%收益
-      const idleMultiplier = state.idleState.isIdle ? 1.0 : 0.5
+      // 暂停状态下收益为0，否则获得100%收益
+      const pauseMultiplier = state.gameState.isPaused ? 0 : 1.0
       
       return {
-        spiritStone: Math.floor(state.player.spiritStoneSpeed * state.player.gameSpeed * idleMultiplier),
-        exp: Math.floor(state.player.expSpeed * state.player.gameSpeed * idleMultiplier),
-        combat: Math.floor(state.player.combatSpeed * state.player.gameSpeed * idleMultiplier)
+        spiritStone: Math.floor(state.player.spiritStoneSpeed * state.player.gameSpeed * pauseMultiplier),
+        exp: Math.floor(state.player.expSpeed * state.player.gameSpeed * pauseMultiplier),
+        combat: Math.floor(state.player.combatSpeed * state.player.gameSpeed * pauseMultiplier)
       }
     }
   },
   
   actions: {
-    // 开始挂机
+    // 暂停游戏
+    pauseGame() {
+      this.gameState.isPaused = true
+    },
+    
+    // 恢复游戏
+    resumeGame() {
+      this.gameState.isPaused = false
+    },
+    
+    // 切换暂停状态
+    togglePause() {
+      this.gameState.isPaused = !this.gameState.isPaused
+    },
+    
+    // 开始挂机 (保留兼容性)
     startIdle() {
       this.idleState.isIdle = true
       this.idleState.startTime = Date.now()
     },
     
-    // 停止挂机
+    // 停止挂机 (保留兼容性)
     stopIdle() {
       this.idleState.isIdle = false
       this.idleState.startTime = null
@@ -123,6 +139,11 @@ export const useGameStore = defineStore('game', {
     
     // 处理游戏收益(每秒调用)
     processGameGains(seconds) {
+      // 如果游戏暂停，直接返回，不处理任何数据
+      if (this.gameState.isPaused) {
+        return
+      }
+      
       const gains = this.calculateGains(seconds)
       
       this.player.spiritStone += gains.spiritStone

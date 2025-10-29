@@ -10,10 +10,10 @@
         <div class="text-gray-700">仙玉：<span class="font-medium">{{ formatNumber(gameStore.player.jade) }}</span></div>
       </div>
       <button
-        class="w-8 h-8 rounded-full border-2 border-gray-400 flex items-center justify-center text-xl text-gray-600"
+        class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center"
         @click="buyResources"
       >
-        +
+        <span class="text-xs font-bold flex items-center justify-center w-full h-full text-gray-600">+</span>
       </button>
     </div>
 
@@ -31,21 +31,37 @@
         <span class="text-gray-500">(速度x{{ gameStore.player.gameSpeed }})</span>
       </div>
       <div class="relative z-10 flex items-center gap-2">
-
-                  <span v-if="!gameStore.idleState.isIdle" class="text-xs" :class="text-red-500">
+        <!-- 暂停状态显示 -->
+        <span v-if="gameStore.gameState.isPaused" class="text-xs text-red-500">
           已暂停
-          </span>
+        </span>
+        
+        <!-- 暂停/恢复按钮 -->
         <button
-          class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center"
-          @click="toggleIdle"
+          class="w-6 h-6 rounded-full border flex items-center justify-center"
+          :class="{
+            'border-red-400 bg-red-50': gameStore.gameState.isPaused,
+            'border-gray-400': !gameStore.gameState.isPaused
+          }"
+          @click="togglePause"
         >
-          {{ gameStore.idleState.isIdle ? '⏸' : '▶' }}
+          <span 
+            class="text-xs font-bold flex items-center justify-center w-full h-full"
+            :class="{
+              'text-red-500': gameStore.gameState.isPaused,
+              'text-gray-600': !gameStore.gameState.isPaused
+            }"
+          >
+            {{ gameStore.gameState.isPaused ? '▶' : '⏸' }}
+          </span>
         </button>
+        
+        <!-- 设置按钮 -->
         <button
           class="w-6 h-6 rounded-full border border-gray-400 flex items-center justify-center"
           @click="openSettings"
         >
-          ⚙
+          <span class="flex items-center justify-center w-full h-full">⚙</span>
         </button>
       </div>
     </div>
@@ -66,13 +82,9 @@ const formatNumber = (num) => {
   return (num / 1000000000000).toFixed(1) + 'T'
 }
 
-// 切换挂机状态
-const toggleIdle = () => {
-  if (gameStore.idleState.isIdle) {
-    gameStore.stopIdle()
-  } else {
-    gameStore.startIdle()
-  }
+// 切换暂停状态
+const togglePause = () => {
+  gameStore.togglePause()
 }
 
 // 购买资源
