@@ -6,14 +6,16 @@
  * 
  * 参数设定：
  * - 境界系数：Math.floor((level - 1) / 10) + 1（每大境界+1）
- * - 加成：1000（暂时写死，后续设计）
+ * - 加成：天赋加成 + 灵根加成 + 装备加成 + ...（动态计算）
  * - 轮回加成：0（后续设计）
  * - 战斗倍率：0（后续设计）
  * 
  * @author AI Assistant
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2025-10-30
  */
+
+import { calculateBattleAttributeBonuses } from './talentSystem.js'
 
 /**
  * 基础属性配置（练气1层的基础值）
@@ -63,21 +65,44 @@ const POWER_WEIGHTS = {
 }
 
 /**
- * 根据境界等级计算八大属性
+ * 根据境界等级和天赋计算八大属性
  * 公式：result = 基础值 × (1 + 境界系数) × (1 + 加成) × (1 + 轮回加成) × (1 + 战斗倍率)
  * 
  * @param {Object} player - 玩家对象
  * @param {number} player.level - 境界等级
+ * @param {Object} player.talents - 天赋对象（可选）
  * @returns {Object} 八大战斗属性
  */
 export function calculateBattleAttributes(player) {
   const level = player.level
+  const talents = player.talents || null
   
   // 1. 境界系数
   const realmCoefficient = getRealmCoefficient(level)
   
-  // 2. 加成（暂时写死为1000，后续设计）
-  const bonus = 1000
+  // 2. 加成（天赋加成 + 灵根加成 + 装备加成 + ...）
+  let attributeBonuses = {}
+  
+  // 2.1 天赋加成
+  if (talents) {
+    attributeBonuses = calculateBattleAttributeBonuses(talents, level)
+  } else {
+    // 如果没有天赋数据，使用默认值0
+    attributeBonuses = {
+      hp: 0,
+      attack: 0,
+      defense: 0,
+      speed: 0,
+      crit: 0,
+      toughness: 0,
+      dodge: 0,
+      hit: 0
+    }
+  }
+  
+  // 2.2 灵根加成（后续实现）
+  // 2.3 装备加成（后续实现）
+  // 2.4 功法加成（后续实现）
   
   // 3. 轮回加成（暂时为0，后续设计）
   const reincarnationBonus = 0
@@ -85,12 +110,11 @@ export function calculateBattleAttributes(player) {
   // 4. 战斗倍率（暂时为0，后续设计）
   const battleMultiplier = 0
   
-  // 计算总倍率
-  const totalMultiplier = (1 + realmCoefficient) * (1 + bonus) * (1 + reincarnationBonus) * (1 + battleMultiplier)
-  
-  // 计算最终属性（不再使用成长系数，所有属性统一使用相同倍率）
+  // 计算最终属性（每个属性使用各自的加成）
   const finalAttributes = {}
   for (let attr in BASE_ATTRIBUTES) {
+    const bonus = attributeBonuses[attr] || 0
+    const totalMultiplier = (1 + realmCoefficient) * (1 + bonus) * (1 + reincarnationBonus) * (1 + battleMultiplier)
     finalAttributes[attr] = Math.floor(BASE_ATTRIBUTES[attr] * totalMultiplier)
   }
   

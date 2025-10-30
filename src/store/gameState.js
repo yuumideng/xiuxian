@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { getRealmByLevel, getRealmRequirements } from '@/data/realms.js'
 import { calculateExpGrowthRate, calculateCombatGrowthRate, getGrowthRateDetails } from '@/utils/growthCalculator.js'
 import { calculateBattleAttributes, calculatePower } from '@/utils/battleCalculator.js'
+import { upgradeTalentsOnBreakthrough, getTalentDetails } from '@/utils/talentSystem.js'
 
 export const useGameStore = defineStore('game', {
   state: () => ({
@@ -25,13 +26,13 @@ export const useGameStore = defineStore('game', {
       baseCombatSpeed: 1, // 基础战斗经验增长速度/秒
       gameSpeed: 1, // 游戏整体速度倍率
       
-      // 天赋属性
+      // 天赋属性（初始值40点）
       talents: {
-        qigan: 100, // 气感
-        shishi: 100, // 神识
-        gengu: 100, // 根骨
-        wuxing: 100, // 悟性
-        jiyuan: 100 // 机缘
+        qigan: 40, // 气感 → 血量
+        shishi: 40, // 神识 → 攻击
+        gengu: 40, // 根骨 → 防御
+        wuxing: 40, // 悟性 → 修为修炼速度 + 功法修炼速度
+        jiyuan: 40 // 机缘 → 战斗经验修炼速度 + 灵石获取速度
       },
       
       // 灵根属性
@@ -128,6 +129,11 @@ export const useGameStore = defineStore('game', {
     battlePower: (state) => {
       const attributes = calculateBattleAttributes(state.player)
       return calculatePower(attributes)
+    },
+    
+    // 天赋详细信息
+    talentDetails: (state) => {
+      return getTalentDetails(state.player.talents, state.player.level)
     }
   },
   
@@ -198,6 +204,7 @@ export const useGameStore = defineStore('game', {
       if (!this.canBreakthrough) return false
       
       const requirements = this.currentRequirements
+      const oldLevel = this.player.level
       
       // 扣除突破所需的修为和战斗经验，保留剩余部分
       this.player.exp -= requirements.exp
@@ -205,6 +212,7 @@ export const useGameStore = defineStore('game', {
       
       // 提升境界
       this.player.level++
+      const newLevel = this.player.level
       
       // 年龄增长
       this.player.age += Math.floor(Math.random() * 10) + 1
@@ -213,6 +221,9 @@ export const useGameStore = defineStore('game', {
       this.player.baseExpSpeed = Math.floor(this.player.baseExpSpeed * 1.2)
       this.player.baseCombatSpeed = Math.floor(this.player.baseCombatSpeed * 1.15)
       this.player.spiritStoneSpeed = Math.floor(this.player.spiritStoneSpeed * 1.1)
+      
+      // 天赋升级（如果跨越了大境界）
+      this.player.talents = upgradeTalentsOnBreakthrough(this.player.talents, oldLevel, newLevel)
       
       return true
     },
