@@ -13,9 +13,15 @@
  * 规则：
  * - 万 (1e4)
  * - 亿 (1e8)
+ * - 万亿 (1e12)
  * - 亿亿 (1e16)
+ * - 万亿亿 (1e20)
  * - 亿亿亿 (1e24)
- * - 当亿的数量超过5个时，使用角标显示，如 亿⁵ (1e40)
+ * - 万亿亿亿 (1e28)
+ * - 亿亿亿亿 (1e32)
+ * - 万亿亿亿亿 (1e36)
+ * - 亿⁵ (1e40) - 当亿的数量超过5个时使用角标
+ * - 万亿⁵ (1e44)
  * @param {number} num - 要格式化的数字
  * @returns {string} 格式化后的字符串
  */
@@ -34,21 +40,31 @@ export function formatChineseNumber(num) {
     return formatTwoSignificantDigits(wanValue) + '万'
   }
   
-  // 亿以上，计算是多少个"亿"
-  // 计算是多少个"亿"
-  const yiCount = Math.floor(Math.log10(num) / 8);
-  const divisor = Math.pow(10, yiCount * 8);
+  // 亿以上，使用完整的单位体系：万、亿、万亿、亿亿、万亿亿...
+  // 计算是第几个"级别"（每4位数一个级别）
+  const level = Math.floor(Math.log10(num) / 4);
+  
+  // 判断是"万"系列还是"亿"系列
+  // level: 2=亿(1e8), 3=万亿(1e12), 4=亿亿(1e16), 5=万亿亿(1e20)...
+  const yiCount = Math.floor(level / 2); // 有多少个"亿"
+  const hasWan = level % 2 === 1; // 是否有"万"前缀
+  
+  const divisor = Math.pow(10, level * 4);
   const value = num / divisor;
   
-  if (yiCount === 1) {
-    return formatTwoSignificantDigits(value) + '亿';
-  } else if (yiCount <= 5) {
-    // 2-5个亿：亿亿、亿亿亿、亿亿亿亿、亿亿亿亿亿
-    return formatTwoSignificantDigits(value) + '亿'.repeat(yiCount);
+  // 构建单位
+  let unit = '';
+  if (yiCount <= 5) {
+    // 5个亿及以下：直接重复"亿"
+    if (hasWan) unit = '万';
+    unit += '亿'.repeat(yiCount);
   } else {
     // 超过5个亿：使用角标
-    return formatTwoSignificantDigits(value) + '亿' + toSuperscript(yiCount);
+    if (hasWan) unit = '万';
+    unit += '亿' + toSuperscript(yiCount);
   }
+  
+  return formatTwoSignificantDigits(value) + unit;
 }
 
 /**
