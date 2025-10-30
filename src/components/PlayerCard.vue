@@ -142,10 +142,8 @@ const gameStore = useGameStore()
 const currentRealm = computed(() => gameStore.currentRealm)
 const currentWorld = computed(() => getWorldByLevel(gameStore.player.level))
 
-// 计算战斗力
-const calculatePower = computed(() => {
-  return gameStore.player.level * 100 + gameStore.player.combat + gameStore.player.exp * 0.1
-})
+// 使用新的战斗力计算系统
+const calculatePower = computed(() => gameStore.battlePower)
 
 // 获取指数显示（用于上标）
 const getExponentDisplay = (value) => {

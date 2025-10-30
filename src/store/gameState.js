@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getRealmByLevel, getRealmRequirements } from '@/data/realms.js'
 import { calculateExpGrowthRate, calculateCombatGrowthRate, getGrowthRateDetails } from '@/utils/growthCalculator.js'
+import { calculateBattleAttributes, calculatePower } from '@/utils/battleCalculator.js'
 
 export const useGameStore = defineStore('game', {
   state: () => ({
@@ -116,6 +117,17 @@ export const useGameStore = defineStore('game', {
     // 增长速率详细信息
     growthRateDetails: (state) => {
       return getGrowthRateDetails(state.player)
+    },
+    
+    // 战斗属性（八大属性）
+    battleAttributes: (state) => {
+      return calculateBattleAttributes(state.player)
+    },
+    
+    // 战斗力
+    battlePower: (state) => {
+      const attributes = calculateBattleAttributes(state.player)
+      return calculatePower(attributes)
     }
   },
   
