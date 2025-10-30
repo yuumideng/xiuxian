@@ -167,8 +167,7 @@ export const useGameStore = defineStore('game', {
         this.gameState.timeProgress = this.gameState.timeProgress % 100
       }
       
-      // 检查是否可以自动突破
-      this.checkAutoBreakthrough()
+      // 移除自动突破，改为手动点击渡劫飞升按钮
     },
     
     // 计算收益
@@ -182,23 +181,18 @@ export const useGameStore = defineStore('game', {
       }
     },
     
-    // 检查自动突破
-    checkAutoBreakthrough() {
-      while (this.canBreakthrough && this.nextRealm) {
-        this.breakthrough()
-      }
-    },
-    
-    // 境界突破
+    // 境界突破（渡劫飞升）
     breakthrough() {
       if (!this.canBreakthrough) return false
       
+      const requirements = this.currentRequirements
+      
+      // 扣除突破所需的修为和战斗经验，保留剩余部分
+      this.player.exp -= requirements.exp
+      this.player.combat -= requirements.combat
+      
       // 提升境界
       this.player.level++
-      
-      // 清空修为和战斗经验
-      this.player.exp = 0
-      this.player.combat = 0
       
       // 年龄增长
       this.player.age += Math.floor(Math.random() * 10) + 1

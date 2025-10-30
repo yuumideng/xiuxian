@@ -48,46 +48,48 @@
     </div>
 
     <!-- 修为和战斗经验 -->
-    <div class="space-y-1 mb-2">
-      <div>
+    <div class="flex gap-2 mb-2 items-center">
+      <!-- 左侧：进度条区块 -->
+      <div class="flex-1 space-y-1">
         <!-- 修为进度条 -->
-        <div class="bg-teal-100 text-teal-700 px-3 py-1.5 rounded text-xs">
-          <div class="flex items-center justify-between mb-1">
-            <span>修为：{{ formatNumber(gameStore.player.exp) }}/{{ formatNumber(gameStore.currentRequirements.exp) }}</span>
-            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.exp) }}/秒</span>
-          </div>
-          <div class="w-full bg-teal-200 rounded-full h-1">
-            <div 
-              class="bg-teal-500 h-1 rounded-full transition-all duration-300" 
-              :style="{ width: gameStore.expProgress + '%' }"
-            ></div>
+        <div class="relative rounded overflow-hidden bg-teal-50/50 border border-teal-200">
+          <!-- 进度背景 -->
+          <div 
+            class="absolute inset-0 bg-teal-400/30 transition-all duration-300"
+            :style="{ width: gameStore.expProgress + '%' }"
+          ></div>
+          <!-- 文字内容 -->
+          <div class="relative px-3 py-1 flex items-center justify-between text-xs text-teal-800">
+            <span class="font-medium">修为：{{ formatNumber(gameStore.player.exp) }}/{{ formatNumber(gameStore.currentRequirements.exp) }}<sup>{{ getExponentDisplay(gameStore.currentRequirements.exp) }}</sup></span>
+            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.exp) }}<sup>{{ getExponentDisplay(gameStore.actualSpeeds.exp) }}</sup>/10天</span>
           </div>
         </div>
         
         <!-- 战斗经验进度条 -->
-        <div class="bg-orange-100 text-orange-700 px-3 py-1.5 rounded text-xs">
-          <div class="flex items-center justify-between mb-1">
-            <span>战斗经验：{{ formatNumber(gameStore.player.combat) }}/{{ formatNumber(gameStore.currentRequirements.combat) }}</span>
-            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.combat) }}/秒</span>
+        <div class="relative rounded overflow-hidden bg-orange-50/50 border border-orange-200">
+          <!-- 进度背景 -->
+          <div 
+            class="absolute inset-0 bg-orange-400/30 transition-all duration-300"
+            :style="{ width: gameStore.combatProgress + '%' }"
+          ></div>
+          <!-- 文字内容 -->
+          <div class="relative px-3 py-1 flex items-center justify-between text-xs text-orange-800">
+            <span class="font-medium">战斗经验：{{ formatNumber(gameStore.player.combat) }}/{{ formatNumber(gameStore.currentRequirements.combat) }}<sup>{{ getExponentDisplay(gameStore.currentRequirements.combat) }}</sup></span>
+            <span class="text-green-600">+{{ formatNumber(gameStore.actualSpeeds.combat) }}<sup>{{ getExponentDisplay(gameStore.actualSpeeds.combat) }}</sup>/10天</span>
           </div>
-          <div class="w-full bg-orange-200 rounded-full h-1">
-            <div 
-              class="bg-orange-500 h-1 rounded-full transition-all duration-300" 
-              :style="{ width: gameStore.combatProgress + '%' }"
-            ></div>
-          </div>
-        </div>
-        
-        <!-- 突破按钮 -->
-        <div v-if="gameStore.canBreakthrough" class="mt-2">
-          <button 
-            class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
-            @click="breakthrough"
-          >
-            🌟 突破至{{ gameStore.nextRealm?.fullName || '未知境界' }}
-          </button>
         </div>
       </div>
+      
+      <!-- 右侧：渡劫飞升按钮 -->
+      <GameButton 
+        :color="gameStore.canBreakthrough ? 'dark' : 'gray'"
+        custom-class="flex-col !px-4 whitespace-nowrap"
+        :disabled="!gameStore.canBreakthrough"
+        @click="handleBreakthrough"
+      >
+        <span class="text-sm leading-tight">渡劫</span>
+        <span class="text-sm leading-tight">飞升</span>
+      </GameButton>
     </div>
 
     <!-- 操作按钮 - 同一行,左边4个小按钮,右边2个大按钮 -->
@@ -145,13 +147,29 @@ const calculatePower = computed(() => {
   return gameStore.player.level * 100 + gameStore.player.combat + gameStore.player.exp * 0.1
 })
 
+// 获取指数显示（用于上标）
+const getExponentDisplay = (value) => {
+  if (value < 10000) return ''
+  
+  const absValue = Math.abs(value)
+  const exponent = Math.floor(Math.log10(absValue) / 4)
+  
+  if (exponent > 0) {
+    return exponent
+  }
+  return ''
+}
 
-
-// 突破功能
-const breakthrough = () => {
+// 渡劫飞升功能（每次点击只突破一次）
+const handleBreakthrough = () => {
+  if (!gameStore.canBreakthrough) return
+  
+  const beforeRealm = gameStore.currentRealm.fullName
   const success = gameStore.breakthrough()
+  
   if (success) {
-    console.log(`成功突破至${gameStore.currentRealm.fullName}!`)
+    const afterRealm = gameStore.currentRealm.fullName
+    console.log(`✨ 渡劫飞升成功！${beforeRealm} → ${afterRealm}`)
   }
 }
 </script>
