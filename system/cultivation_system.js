@@ -70,14 +70,14 @@ export class CultivationSystem {
       // 特征：前25%快速衰减(2.609→1.656)，后75%缓慢衰减(1.656→1.282)
       growthCurve: [
         { progress: 0.000, ratio: 2.6 },  // 第1次增长 - 境界起始后的首次增长
-        { progress: 0.125, ratio: 1.895 },  // 第2次增长 - 快速衰减
+        { progress: 0.125, ratio: 1.9 },  // 第2次增长 - 快速衰减
         { progress: 0.250, ratio: 1.656 },  // 第3次增长 - 衰减放缓
         { progress: 0.375, ratio: 1.533 },  // 第4次增长
         { progress: 0.500, ratio: 1.450 },  // 第5次增长 - 中期
         { progress: 0.625, ratio: 1.391 },  // 第6次增长
         { progress: 0.750, ratio: 1.360 },  // 第7次增长 - 缓慢衰减
         { progress: 0.875, ratio: 1.318 },  // 第8次增长
-        { progress: 1.000, ratio: 1.282 }   // 第9次增长 - 境界大圆满
+        { progress: 1.000, ratio: 1.3 }   // 第9次增长 - 境界大圆满
       ]
     };
     
@@ -368,19 +368,37 @@ export const cultivationSystem = new CultivationSystem();
 // 导出工具函数
 export const utils = {
   /**
-   * 格式化数字显示
+   * 格式化数字显示（使用中文游戏标准单位）
+   * 规则：
+   * - 万 (1e4)
+   * - 亿 (1e8)
+   * - 亿亿 (1e16)
+   * - 亿亿亿 (1e24)
+   * - 当亿的数量超过5个时，使用角标显示，如 亿⁵ (1e40)
    * @param {number} num 数字
    * @returns {string} 格式化后的字符串
    */
   formatNumber(num) {
-    if (num >= 1e12) {
-      return (num / 1e12).toFixed(1) + '万亿';
-    } else if (num >= 1e9) {
-      return (num / 1e9).toFixed(1) + '十亿';
-    } else if (num >= 1e6) {
-      return (num / 1e6).toFixed(1) + '百万';
-    } else if (num >= 1e3) {
-      return (num / 1e3).toFixed(1) + '千';
+    if (num >= 1e8) {
+      // 计算是多少个"亿"
+      const yiCount = Math.floor(Math.log10(num) / 8);
+      const divisor = Math.pow(10, yiCount * 8);
+      const value = (num / divisor).toFixed(2);
+      
+      if (yiCount === 1) {
+        return value + '亿';
+      } else if (yiCount <= 5) {
+        // 2-5个亿：亿亿、亿亿亿、亿亿亿亿、亿亿亿亿亿
+        return value + '亿'.repeat(yiCount);
+      } else {
+        // 超过5个亿：使用角标
+        const superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+        const countStr = yiCount.toString();
+        const superscript = countStr.split('').map(d => superscripts[parseInt(d)]).join('');
+        return value + '亿' + superscript;
+      }
+    } else if (num >= 1e4) {
+      return (num / 1e4).toFixed(2) + '万';
     } else {
       return num.toLocaleString();
     }

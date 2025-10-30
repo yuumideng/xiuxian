@@ -10,6 +10,12 @@
 
 /**
  * 格式化数字为中文计数方式
+ * 规则：
+ * - 万 (1e4)
+ * - 亿 (1e8)
+ * - 亿亿 (1e16)
+ * - 亿亿亿 (1e24)
+ * - 当亿的数量超过5个时，使用角标显示，如 亿⁵ (1e40)
  * @param {number} num - 要格式化的数字
  * @returns {string} 格式化后的字符串
  */
@@ -28,51 +34,20 @@ export function formatChineseNumber(num) {
     return formatTwoSignificantDigits(wanValue) + '万'
   }
   
-  // 亿到万亿之间，展示xxx亿
-  if (num < 1000000000000) { // 1万亿 = 1,000,000,000,000
-    const yiValue = num / 100000000
-    return formatTwoSignificantDigits(yiValue) + '亿'
-  }
+  // 亿以上，计算是多少个"亿"
+  // 计算是多少个"亿"
+  const yiCount = Math.floor(Math.log10(num) / 8);
+  const divisor = Math.pow(10, yiCount * 8);
+  const value = num / divisor;
   
-  // 万亿到万万亿之间，展示xxx万亿
-  if (num < 10000000000000000) { // 1万万亿 = 10^16
-    const wanYiValue = num / 1000000000000
-    return formatTwoSignificantDigits(wanYiValue) + '万亿'
-  }
-  
-  // 万万亿以上，使用亿亿、亿亿亿等
-  // 1亿亿 = 1亿 × 1亿 = 10^16
-  if (num < 10000000000000000000000000) { // 小于10^24，显示为亿亿
-    const yiYiValue = num / 10000000000000000 // 除以10^16
-    return formatTwoSignificantDigits(yiYiValue) + '亿亿'
-  } else if (num < 1000000000000000000000000000000000) { // 小于10^32，显示为亿亿亿
-    const yiYiYiValue = num / 1000000000000000000000000 // 除以10^24
-    return formatTwoSignificantDigits(yiYiYiValue) + '亿亿亿'
-  } else if (num < 100000000000000000000000000000000000000000) { // 小于10^40，显示为亿亿亿亿
-    const yiYiYiYiValue = num / 100000000000000000000000000000000 // 除以10^32
-    return formatTwoSignificantDigits(yiYiYiYiValue) + '亿亿亿亿'
+  if (yiCount === 1) {
+    return formatTwoSignificantDigits(value) + '亿';
+  } else if (yiCount <= 5) {
+    // 2-5个亿：亿亿、亿亿亿、亿亿亿亿、亿亿亿亿亿
+    return formatTwoSignificantDigits(value) + '亿'.repeat(yiCount);
   } else {
-    // 更大的数值，计算需要多少个亿
-    let tempNum = num
-    let yiCount = 0
-    
-    // 每次除以10^8 (1亿)，计算有多少个亿
-    while (tempNum >= 100000000) {
-      tempNum = tempNum / 100000000
-      yiCount++
-    }
-    
-    const formattedValue = formatTwoSignificantDigits(tempNum)
-    
-    // 生成单位
-    let unit = ''
-    if (yiCount >= 5) {
-      unit = '亿' + toSuperscript(yiCount)
-    } else {
-      unit = '亿'.repeat(yiCount)
-    }
-    
-    return formattedValue + unit
+    // 超过5个亿：使用角标
+    return formatTwoSignificantDigits(value) + '亿' + toSuperscript(yiCount);
   }
 }
 

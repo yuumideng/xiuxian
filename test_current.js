@@ -128,12 +128,29 @@ keyLevels.forEach(level => {
   const realmInfo = system.getRealmInfo(level);
   
   const formatNumber = (num) => {
-    if (num >= 1e15) return (num / 1e15).toFixed(1) + '千万亿';
-    if (num >= 1e12) return (num / 1e12).toFixed(1) + '万亿';
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + '十亿';
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + '百万';
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + '千';
-    return num.toLocaleString();
+    if (num >= 1e8) {
+      // 计算是多少个"亿"
+      const yiCount = Math.floor(Math.log10(num) / 8);
+      const divisor = Math.pow(10, yiCount * 8);
+      const value = (num / divisor).toFixed(2);
+      
+      if (yiCount === 1) {
+        return value + '亿';
+      } else if (yiCount <= 5) {
+        // 2-5个亿：亿亿、亿亿亿、亿亿亿亿、亿亿亿亿亿
+        return value + '亿'.repeat(yiCount);
+      } else {
+        // 超过5个亿：使用角标
+        const superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+        const countStr = yiCount.toString();
+        const superscript = countStr.split('').map(d => superscripts[parseInt(d)]).join('');
+        return value + '亿' + superscript;
+      }
+    } else if (num >= 1e4) {
+      return (num / 1e4).toFixed(2) + '万';
+    } else {
+      return num.toLocaleString();
+    }
   };
   
   let status = '🏆';
