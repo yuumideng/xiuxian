@@ -2,12 +2,16 @@
  * 战斗属性计算器
  * 
  * 核心设计：
- * 1. 每提升1个小境界，战斗力增长约7.2%
- * 2. 每跨越1个大境界（10级），战斗力累计翻倍
- * 3. 攻击和防御为核心属性，血量次之
+ * 公式：result = 基础值 × (1 + 境界系数) × (1 + 加成) × (1 + 轮回加成) × (1 + 战斗倍率)
+ * 
+ * 参数设定：
+ * - 境界系数：Math.floor((level - 1) / 10) + 1（每大境界+1）
+ * - 加成：1000（暂时写死，后续设计）
+ * - 轮回加成：0（后续设计）
+ * - 战斗倍率：0（后续设计）
  * 
  * @author AI Assistant
- * @version 1.0.0
+ * @version 2.0.0
  * @date 2025-10-30
  */
 
@@ -15,29 +19,32 @@
  * 基础属性配置（练气1层的基础值）
  */
 const BASE_ATTRIBUTES = {
-  hp: 1000,        // 血量
-  attack: 100,     // 攻击
-  defense: 100,    // 防御
+  attack: 20,      // 攻击
+  dodge: 20,       // 闪避
+  defense: 10,     // 防御
+  hp: 100,         // 血量
   speed: 100,      // 速度
-  crit: 50,        // 暴击
-  toughness: 50,   // 韧性
-  dodge: 30,       // 闪避
-  hit: 80          // 命中
+  crit: 100,       // 暴击
+  toughness: 100,  // 韧性
+  hit: 100         // 命中
 }
 
 /**
- * 属性成长系数
- * 不同属性有不同的成长速度，增加真实感
+ * 境界系数配置
+ * 根据大境界返回对应的系数
+ * 境界级别只会随着大境界的增加而增加
+ * 练气1层=1, 练气10层=1
+ * 筑基初期=2, 筑基大圆满=2
+ * 金丹初期=3, 金丹大圆满=3
+ * 以此类推...
  */
-const GROWTH_RATES = {
-  hp: 1.0,         // 血量标准成长
-  attack: 1.0,     // 攻击标准成长
-  defense: 1.0,    // 防御标准成长
-  speed: 0.95,     // 速度成长稍慢5%
-  crit: 0.98,      // 暴击成长稍慢2%
-  toughness: 0.98, // 韧性成长稍慢2%
-  dodge: 0.92,     // 闪避成长较慢8%
-  hit: 0.95        // 命中成长稍慢5%
+export function getRealmCoefficient(level) {
+  // 计算大境界级别：每10个小等级为一个大境界
+  // level 1-10 -> 境界级别 1 (练气)
+  // level 11-20 -> 境界级别 2 (筑基)
+  // level 21-30 -> 境界级别 3 (金丹)
+  // ...
+  return Math.floor((level - 1) / 10) + 1;
 }
 
 /**
@@ -56,35 +63,35 @@ const POWER_WEIGHTS = {
 }
 
 /**
- * 根据境界等级和战斗经验计算八大属性
+ * 根据境界等级计算八大属性
+ * 公式：result = 基础值 × (1 + 境界系数) × (1 + 加成) × (1 + 轮回加成) × (1 + 战斗倍率)
  * 
  * @param {Object} player - 玩家对象
  * @param {number} player.level - 境界等级
- * @param {number} player.combat - 战斗经验
  * @returns {Object} 八大战斗属性
  */
 export function calculateBattleAttributes(player) {
   const level = player.level
-  const combat = player.combat
   
-  // 境界倍率：每个小境界提升约7.2%，10级翻倍
-  // 使用 2^((level-1)/10) 实现精确的指数增长
-  const levelMultiplier = Math.pow(2, (level - 1) / 10)
+  // 1. 境界系数
+  const realmCoefficient = getRealmCoefficient(level)
   
-  // 战斗经验影响（微调，不超过20%）
-  // 使用对数函数，避免战斗经验影响过大
-  const combatBonus = Math.min(0.2, Math.log10(combat + 1) / 50)
-  const combatMultiplier = 1 + combatBonus
+  // 2. 加成（暂时写死为1000，后续设计）
+  const bonus = 1000
   
-  // 综合倍率
-  const totalMultiplier = levelMultiplier * combatMultiplier
+  // 3. 轮回加成（暂时为0，后续设计）
+  const reincarnationBonus = 0
   
-  // 计算最终属性
+  // 4. 战斗倍率（暂时为0，后续设计）
+  const battleMultiplier = 0
+  
+  // 计算总倍率
+  const totalMultiplier = (1 + realmCoefficient) * (1 + bonus) * (1 + reincarnationBonus) * (1 + battleMultiplier)
+  
+  // 计算最终属性（不再使用成长系数，所有属性统一使用相同倍率）
   const finalAttributes = {}
   for (let attr in BASE_ATTRIBUTES) {
-    finalAttributes[attr] = Math.floor(
-      BASE_ATTRIBUTES[attr] * totalMultiplier * GROWTH_RATES[attr]
-    )
+    finalAttributes[attr] = Math.floor(BASE_ATTRIBUTES[attr] * totalMultiplier)
   }
   
   return finalAttributes
@@ -192,6 +199,5 @@ export function getAttributeGrowth(currentLevel, targetLevel, combat = 0) {
  */
 export const BATTLE_CONFIG = {
   BASE_ATTRIBUTES,
-  GROWTH_RATES,
   POWER_WEIGHTS
 }
