@@ -65,16 +65,22 @@
         </button>
       </div>
     </div>
+    
+    <!-- 设置弹窗 -->
+    <SettingsModal v-model="showSettingsModal" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useGameStore } from '@/store/gameState.js'
 import { formatNumber } from '@/utils/numberFormatter.js'
+import SettingsModal from './SettingsModal.vue'
 
 const gameStore = useGameStore()
 
-
+// 控制设置弹窗显示
+const showSettingsModal = ref(false)
 
 // 切换暂停状态
 const togglePause = () => {
@@ -89,8 +95,7 @@ const buyResources = () => {
 
 // 打开设置
 const openSettings = () => {
-  // TODO: 实现设置功能
-  console.log('打开设置')
+  showSettingsModal.value = true
 }
 </script>
 

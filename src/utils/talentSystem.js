@@ -171,6 +171,24 @@ export function calculateBattleAttributeBonuses(talents, level) {
 }
 
 /**
+ * 计算修炼速度的总加成（用于修炼速度计算公式）
+ * 
+ * @param {Object} talents - 天赋对象
+ * @param {number} level - 玩家等级
+ * @returns {Object} 修炼速度的加成值
+ */
+export function calculateCultivationSpeedBonuses(talents, level) {
+  const bonuses = calculateTalentBonuses(talents, level)
+  
+  return {
+    expSpeed: bonuses.expSpeed,              // 悟性 → 修为修炼速度
+    combatSpeed: bonuses.combatSpeed,        // 机缘 → 战斗经验修炼速度
+    spiritStoneSpeed: bonuses.spiritStoneSpeed, // 机缘 → 灵石获取速度
+    techniqueSpeed: bonuses.skillSpeed       // 悟性 → 功法修炼速度
+  }
+}
+
+/**
  * 初始化玩家天赋（用于新游戏或重置）
  * 
  * @param {number} level - 玩家等级

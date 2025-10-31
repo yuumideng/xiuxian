@@ -3,6 +3,10 @@ import { getRealmByLevel, getRealmRequirements } from '@/data/realms.js'
 import { calculateExpGrowthRate, calculateCombatGrowthRate, getGrowthRateDetails } from '@/utils/growthCalculator.js'
 import { calculateBattleAttributes, calculatePower } from '@/utils/battleCalculator.js'
 import { upgradeTalentsOnBreakthrough, getTalentDetails } from '@/utils/talentSystem.js'
+import { getMeridianDetails } from '@/utils/meridianSystem.js'
+import { getSpiritRingDetails } from '@/utils/spiritRingSystem.js'
+import { initializeImmortalRanking, addRealmBonus, getImmortalRankingDetails } from '@/utils/immortalRankingSystem.js'
+import { getCurrentSlotId, saveToSlot, loadSaveSlot } from '@/utils/saveManager.js'
 
 export const useGameStore = defineStore('game', {
   state: () => ({
@@ -45,7 +49,10 @@ export const useGameStore = defineStore('game', {
         feng: 50, // 风灵根
         lei: 50, // 雷灵根
         guang: 100 // 光灵根
-      }
+      },
+      
+      // 仙战榜（随机加成系统）
+      immortalRanking: initializeImmortalRanking(1)
     },
     
     // 游戏状态
@@ -134,6 +141,21 @@ export const useGameStore = defineStore('game', {
     // 天赋详细信息
     talentDetails: (state) => {
       return getTalentDetails(state.player.talents, state.player.level)
+    },
+    
+    // 经脉详细信息
+    meridianDetails: (state) => {
+      return getMeridianDetails(state.player.level)
+    },
+    
+    // 仙灵环详细信息
+    spiritRingDetails: (state) => {
+      return getSpiritRingDetails(state.player.level)
+    },
+    
+    // 仙战榜详细信息
+    immortalRankingDetails: (state) => {
+      return getImmortalRankingDetails(state.player.immortalRanking)
     }
   },
   
@@ -225,6 +247,13 @@ export const useGameStore = defineStore('game', {
       // 天赋升级（如果跨越了大境界）
       this.player.talents = upgradeTalentsOnBreakthrough(this.player.talents, oldLevel, newLevel)
       
+      // 仙战榜升级（如果跨越了大境界）
+      const oldRealmLevel = Math.floor((oldLevel - 1) / 10) + 1
+      const newRealmLevel = Math.floor((newLevel - 1) / 10) + 1
+      if (newRealmLevel > oldRealmLevel) {
+        this.player.immortalRanking = addRealmBonus(this.player.immortalRanking, newRealmLevel)
+      }
+      
       return true
     },
     
@@ -264,40 +293,143 @@ export const useGameStore = defineStore('game', {
     
     // 保存游戏数据
     saveGame() {
+      const slotId = getCurrentSlotId()
+      
+      if (!slotId) {
+        console.warn('未选择存档槽位，无法保存')
+        return
+      }
+      
       const saveData = {
         player: this.player,
         gameState: this.gameState,
-        saveTime: Date.now()
+        idleState: this.idleState
       }
-      localStorage.setItem('xiuxian-game-save', JSON.stringify(saveData))
+      
+      saveToSlot(slotId, saveData)
     },
     
     // 加载游戏数据
     loadGame() {
-      const saveData = localStorage.getItem('xiuxian-game-save')
+      const slotId = getCurrentSlotId()
+      
+      if (!slotId) {
+        console.warn('未选择存档槽位')
+        return
+      }
+      
+      const saveData = loadSaveSlot(slotId)
       if (saveData) {
         try {
-          const data = JSON.parse(saveData)
-          this.player = { ...this.player, ...data.player }
-          this.gameState = { ...this.gameState, ...data.gameState }
+          // 直接使用存档数据覆盖，确保姓名等信息正确加载
+          if (saveData.player) {
+            this.player = { ...this.player, ...saveData.player }
+          }
+          if (saveData.gameState) {
+            this.gameState = { ...this.gameState, ...saveData.gameState }
+          }
+          if (saveData.idleState) {
+            this.idleState = { ...this.idleState, ...saveData.idleState }
+          }
           
           // 兼容旧存档：将旧的速度属性转换为新的基础速度属性
-          if (data.player.expSpeed && !data.player.baseExpSpeed) {
+          if (saveData.player.expSpeed && !saveData.player.baseExpSpeed) {
             this.player.baseExpSpeed = 1 // 重置为基础值，让新公式计算
           }
-          if (data.player.combatSpeed && !data.player.baseCombatSpeed) {
+          if (saveData.player.combatSpeed && !saveData.player.baseCombatSpeed) {
             this.player.baseCombatSpeed = 1 // 重置为基础值，让新公式计算
           }
           
+          // 兼容旧存档：补全缺失的仙战榜数据
+          if (this.player.immortalRanking) {
+            const currentLevel = this.player.level
+            const currentRealmLevel = Math.floor((currentLevel - 1) / 10) + 1
+            const existingRealmLevels = Object.keys(this.player.immortalRanking).map(Number)
+            const maxExistingRealmLevel = Math.max(...existingRealmLevels, 0)
+            
+            // 如果当前境界级别大于已有的最大境界级别，补全缺失的境界
+            if (currentRealmLevel > maxExistingRealmLevel) {
+              console.log(`检测到仙战榜数据不完整，正在补全从第${maxExistingRealmLevel + 1}境到第${currentRealmLevel}境的数据...`)
+              for (let realmLevel = maxExistingRealmLevel + 1; realmLevel <= currentRealmLevel; realmLevel++) {
+                this.player.immortalRanking = addRealmBonus(this.player.immortalRanking, realmLevel)
+              }
+              console.log('仙战榜数据补全完成！')
+            }
+          } else {
+            // 如果完全没有仙战榜数据，重新初始化
+            const currentLevel = this.player.level
+            const currentRealmLevel = Math.floor((currentLevel - 1) / 10) + 1
+            this.player.immortalRanking = initializeImmortalRanking(currentRealmLevel)
+            console.log(`初始化仙战榜数据到第${currentRealmLevel}境`)
+          }
+          
           // 如果有离线时间,设置为离线状态
-          if (data.saveTime) {
-            this.gameState.lastOfflineTime = data.saveTime
+          if (saveData.saveTime) {
+            this.gameState.lastOfflineTime = saveData.saveTime
             this.setOnline()
           }
+          
+          console.log('游戏数据加载成功，玩家姓名:', this.player.name)
         } catch (error) {
           console.error('加载游戏数据失败:', error)
         }
       }
+    },
+    
+    // 重置游戏
+    resetGame() {
+      // 重置玩家数据到初始状态
+      this.player = {
+        name: '道友',
+        level: 1,
+        age: 16,
+        jade: 0,
+        spiritStone: 100,
+        exp: 0,
+        combat: 0,
+        spiritStoneSpeed: 1,
+        baseExpSpeed: 1,
+        baseCombatSpeed: 1,
+        gameSpeed: 1,
+        talents: {
+          qigan: 40,
+          shishi: 40,
+          gengu: 40,
+          wuxing: 40,
+          jiyuan: 40
+        },
+        spiritualRoots: {
+          jin: 50,
+          mu: 50,
+          shui: 50,
+          huo: 50,
+          tu: 50,
+          feng: 50,
+          lei: 50,
+          guang: 100
+        },
+        immortalRanking: initializeImmortalRanking(1)
+      }
+      
+      // 重置游戏状态
+      this.gameState = {
+        isOnline: true,
+        lastOfflineTime: null,
+        totalPlayTime: 0,
+        timeProgress: 0,
+        isPaused: false
+      }
+      
+      // 重置挂机状态
+      this.idleState = {
+        isIdle: true,
+        startTime: null
+      }
+      
+      // 清除本地存储
+      localStorage.removeItem('xiuxian-game-save')
+      
+      console.log('游戏已重置到初始状态')
     }
   }
 })

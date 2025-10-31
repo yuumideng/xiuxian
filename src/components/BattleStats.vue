@@ -1,10 +1,13 @@
 <template>
   <div class="battle-stats bg-white rounded p-2.5">
-    <div class="flex items-center justify-between mb-1.5">
+    <div class="flex items-center gap-2 mb-1.5">
       <h3 class="text-sm font-medium">战斗数据</h3>
-      <div class="text-xs text-orange-600 font-medium">
-        战斗力：{{ formatNumber(gameStore.battlePower) }}
-      </div>
+      <button 
+        class="detail-btn"
+        @click="showDetailModal = true"
+      >
+        加成详情
+      </button>
     </div>
 
     <div class="rounded p-1.5 bg-gray-50">
@@ -19,18 +22,55 @@
         <div>命中：{{ formatNumber(battleAttributes.hit) }}</div>
       </div>
     </div>
+
+    <!-- 加成详情弹窗 -->
+    <Modal 
+      v-model="showDetailModal" 
+      title="战斗属性加成详情"
+      :close-on-click-outside="true"
+    >
+      <BattleAttributeDetail :player="gameStore.player" />
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useGameStore } from '@/store/gameState.js'
 import { formatNumber } from '@/utils/numberFormatter.js'
+import Modal from './common/Modal.vue'
+import BattleAttributeDetail from './BattleAttributeDetail.vue'
 
 const gameStore = useGameStore()
 
 // 使用新的战斗属性计算系统
 const battleAttributes = computed(() => gameStore.battleAttributes)
+
+// 弹窗控制
+const showDetailModal = ref(false)
 </script>
 
-<style scoped></style>
+<style scoped>
+.detail-btn {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  color: #2563eb;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.detail-btn:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.detail-btn:active {
+  transform: scale(0.95);
+}
+
+
+</style>

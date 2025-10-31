@@ -39,14 +39,17 @@ const gameStore = useGameStore()
 let gameLoop = null
 
 // 游戏主循环
+let saveCounter = 0
 const startGameLoop = () => {
   gameLoop = setInterval(() => {
     // 每秒调用游戏收益处理（内部会检查暂停状态）
     gameStore.processGameGains(1)
     
     // 自动保存(每10秒)
-    if (Date.now() % 10000 < 1000) {
+    saveCounter++
+    if (saveCounter >= 10) {
       gameStore.saveGame()
+      saveCounter = 0
     }
   }, 1000)
 }
