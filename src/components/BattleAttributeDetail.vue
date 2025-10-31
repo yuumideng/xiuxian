@@ -14,11 +14,9 @@
           :key="attr.key"
           class="calc-item"
         >
-          <div class="calc-line">
-            <span class="calc-name">{{ attr.name }}{{ formatNumber(allAttributesDetails[attr.key].finalValue) }}</span>
-            <span class="calc-equal"> = </span>
-            <span class="calc-detail">{{ allAttributesDetails[attr.key].calculationFormula }}</span>
-          </div>
+          <span class="calc-name">{{ attr.name }}{{ formatNumber(allAttributesDetails[attr.key].finalValue) }}</span>
+          <span class="calc-equal">=</span>
+          <span class="calc-detail">{{ allAttributesDetails[attr.key].calculationFormula }}</span>
         </div>
       </div>
     </div>
@@ -357,13 +355,13 @@ const reincarnationBonus = computed(() => ({
 }
 
 .formula-box.compact {
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.375rem;
+  margin-bottom: 0.25rem;
 }
 
 .formula-text {
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  font-size: 0.6875rem;
+  line-height: 1.2;
   color: #4b5563;
   word-break: break-all;
 }
@@ -376,18 +374,15 @@ const reincarnationBonus = computed(() => ({
 }
 
 .calculation-box.compact {
-  padding: 0.5rem;
+  padding: 0.25rem 0.375rem;
 }
 
 .calc-item {
-  padding: 0.25rem 0;
-}
-
-.calc-line {
   display: flex;
   align-items: baseline;
-  font-size: 0.8125rem;
-  line-height: 1.6;
+  padding: 0.0625rem 0;
+  font-size: 0.6875rem;
+  line-height: 1.3;
   color: #92400e;
   word-break: break-all;
 }
@@ -396,18 +391,19 @@ const reincarnationBonus = computed(() => ({
   font-weight: 600;
   color: #b45309;
   flex-shrink: 0;
-  margin-right: 0.25rem;
+  margin-right: 0.125rem;
 }
 
 .calc-equal {
   flex-shrink: 0;
-  margin: 0 0.25rem;
+  margin: 0 0.125rem;
   color: #92400e;
 }
 
 .calc-detail {
   color: #92400e;
   word-break: break-all;
+  flex: 1;
 }
 
 .bonus-list {
