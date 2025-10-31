@@ -1,32 +1,55 @@
-# 修仙游戏 Vue3 版本
+# 天道轮回：我的修仙梦
 
-基于超精细调优曲线系统的修仙数值计算游戏
+一款基于 Vue3 的修仙放置类游戏，包含完整的修仙体系、战斗系统和存档管理。
 
 ## 🎯 项目特点
 
-- **优秀精度**: 平均偏差约8.7%，达到优秀级别
-- **数学建模**: 完全基于抽象数学公式，不依赖真实增长比例
-- **前快后慢**: 前期激进衰减，后期缓慢衰减的增长曲线
-- **Vue3 + Vite**: 现代化前端技术栈
+- **完整修仙体系**: 90个境界，从练气到灵虚大圆满
+- **多维成长系统**: 天赋、灵根、经脉、仙灵环、仙战榜等多个成长维度
+- **战斗属性系统**: 8大战斗属性（血量、攻击、防御、暴击等）
+- **存档管理**: 支持多存档，动态创建/删除存档位
+- **现代化技术栈**: Vue3 + Vite + Pinia + Tailwind CSS
 
 ## 📁 项目结构
 
 ```
 xiuxian-game-vue3/
-├── src/                    # Vue3 源码
-│   ├── components/         # 组件
-│   ├── views/             # 页面
-│   └── ...
-├── system/                # 核心计算系统
-│   ├── cultivation_system.js  # 主计算系统
-│   └── test_system.js         # 测试套件
-├── data/                  # 数据文件
-│   └── game_data.js       # 原始游戏数据
-├── docs/                  # 文档
-│   ├── GAME_DESIGN.md     # 游戏设计文档
-│   ├── DEVELOPMENT.md     # 开发文档
-│   └── ...
-├── dist/                  # 构建产物
+├── src/
+│   ├── components/          # 组件
+│   │   ├── common/         # 通用组件（Modal、GameButton）
+│   │   ├── BattleAttributeDetail.vue
+│   │   ├── BattleStats.vue
+│   │   ├── MoreFeatures.vue
+│   │   ├── PlayerCard.vue
+│   │   ├── SettingsModal.vue
+│   │   ├── SkillEquipment.vue
+│   │   ├── TalentSection.vue
+│   │   └── TopBar.vue
+│   ├── data/               # 数据文件
+│   │   ├── names.js        # 姓名数据
+│   │   └── realms.js       # 境界数据
+│   ├── router/             # 路由配置
+│   ├── store/              # 状态管理（Pinia）
+│   │   └── gameState.js    # 游戏状态
+│   ├── utils/              # 工具函数
+│   │   ├── battleAttributeDetailCalculator.js
+│   │   ├── battleCalculator.js
+│   │   ├── growthCalculator.js
+│   │   ├── immortalRankingSystem.js
+│   │   ├── meridianSystem.js
+│   │   ├── numberFormatter.js
+│   │   ├── saveManager.js
+│   │   ├── spiritRingSystem.js
+│   │   └── talentSystem.js
+│   ├── views/              # 页面
+│   │   ├── CreateCharacter.vue  # 创建角色
+│   │   ├── Home.vue            # 游戏主页
+│   │   └── SaveSelect.vue      # 存档选择
+│   ├── App.vue
+│   ├── main.js
+│   └── style.css
+├── docs/                   # 详细文档
+├── dist/                   # 构建产物
 └── 配置文件...
 ```
 
@@ -47,122 +70,94 @@ npm run dev
 npm run build
 ```
 
-### 测试数值系统
-```bash
-node system/test_system.js
-```
+## 🎮 游戏功能
 
-## 🔧 核心系统使用
+### 存档系统
+- 支持多存档（最多8个）
+- 动态创建/删除存档位
+- 可以删除到0个存档位
+- 自动保存（每10秒）
 
-### 基础用法
+### 角色创建
+- 自定义角色姓名（随机仙侠风格姓名）
+- 性别选择
+- 天赋属性（气感、神识、根骨、悟性、机缘）
+- 灵根系统（金木水火土风雷光八种灵根）
+- 轮回加成系统
 
-```javascript
-import { cultivationSystem, utils } from './system/cultivation_system.js';
+### 修炼系统
+- **90个境界**: 练气(1-10) → 筑基(11-20) → 金丹(21-30) → 元婴(31-40) → 化神(41-50) → 炼虚(51-60) → 合体(61-70) → 大乘(71-80) → 灵虚(81-90)
+- **双数值成长**: 修为 + 战斗经验
+- **渡劫飞升**: 手动突破境界
+- **暂停/继续**: 游戏速度控制
 
-// 计算指定等级的修为
-const exp = cultivationSystem.calculate(25, 'exp');
-console.log(`25级修为: ${utils.formatNumber(exp)}`);
+### 成长系统
+- **天赋系统**: 5大天赋影响不同属性
+- **灵根系统**: 8种灵根影响修炼速度
+- **经脉系统**: 随境界提升自动解锁
+- **仙灵环系统**: 提供额外加成
+- **仙战榜系统**: 随机加成系统
 
-// 计算战斗经验
-const combat = cultivationSystem.calculate(25, 'combat');
-console.log(`25级战斗经验: ${utils.formatNumber(combat)}`);
+### 战斗系统
+- **8大战斗属性**: 血量、攻击、防御、暴击率、暴击伤害、命中、闪避、速度
+- **战斗力计算**: 综合所有属性的战斗力评估
+- **详细属性查看**: 可查看每个属性的详细计算过程
 
-// 获取境界信息
-const realmInfo = cultivationSystem.getRealmInfo(25);
-console.log(`25级境界: ${realmInfo.realm} ${realmInfo.stage}`);
-```
+## 📊 核心系统
 
-### 批量计算
+### 数值计算
+- 基于境界系数的增长系统
+- 天赋、灵根、经脉、仙灵环、仙战榜多维度加成
+- 精确的数值平衡
 
-```javascript
-// 批量计算多个等级
-const results = cultivationSystem.calculateBatch([20, 30, 40], 'exp');
+### 数字格式化
+支持大数字显示：
+- 万、亿、万亿、亿亿
+- 上标指数显示（如：8282.37万亿⁴）
 
-// 计算等级范围
-const rangeResults = cultivationSystem.calculateRange(11, 20, 'exp');
-```
-
-### 工具函数
-
-```javascript
-// 格式化数字显示
-const formatted = utils.formatNumber(1234567890);
-console.log(formatted); // "12.3十亿"
-
-// 计算升级所需经验
-const upgradeExp = utils.calculateUpgradeExp(20, 25);
-console.log(`升级需要: ${utils.formatNumber(upgradeExp)}`);
-```
-
-## 📊 系统特性
-
-### 数学模型
-
-- **练气期 (1-10级)**: 使用原始数据，100%准确
-- **人界 (11-80级)**: 超精细分段线性插值
-- **灵界 (81-90级)**: 超精细分段线性插值
-
-### 增长曲线特征
-
-**人界增长比例曲线**:
-- 0%进度: 2.673 (精确匹配真实起始值)
-- 10%进度: 2.00 (前期超快速衰减)
-- 20%进度: 1.75 (继续快速衰减)
-- 50%进度: 1.48 (中期稳定)
-- 90%进度: 1.375 (极缓慢衰减)
-- 100%进度: 1.367 (精确匹配真实结束值)
-
-### 验证结果
-
-- ✅ 平均偏差: ~0.8%
-- 🏆 大部分等级偏差在1%以内
-- 💎 锚点等级偏差为0%
-- 🚀 性能优秀: 计算180个数值 < 10ms
-
-## 🧪 测试
-
-项目包含完整的测试套件:
-
-- **验证测试**: 检查系统准确性
-- **功能测试**: 验证各种计算功能
-- **性能测试**: 测试计算性能
-- **对比测试**: 与真实数据详细对比
-
-运行测试:
-```bash
-node system/test_system.js
-```
+### 存档管理
+- LocalStorage 本地存储
+- 支持多槽位管理
+- 离线收益计算（最多24小时）
 
 ## 📈 技术栈
 
-- **前端**: Vue 3 + Vite + Tailwind CSS
-- **数值系统**: 纯JavaScript ES6+
-- **代码规范**: ESLint + Prettier
+- **前端框架**: Vue 3 (Composition API)
 - **构建工具**: Vite
-
-## 🎮 游戏特色
-
-- **90个等级**: 从练气一层到灵虚大圆满
-- **8大境界**: 练气、筑基、金丹、元婴、化神、炼虚、合体、大乘、灵虚
-- **双数值系统**: 修为 + 战斗经验
-- **精确计算**: 基于数学建模的精确数值系统
+- **状态管理**: Pinia
+- **路由**: Vue Router
+- **样式**: Tailwind CSS
+- **代码规范**: ESLint + Prettier
+- **存储**: LocalStorage
 
 ## 📝 开发说明
 
-### 文件清理
+### 项目清理
 
-项目已完成文件整理，删除了21个实验性文件，保留核心系统:
+项目已完成大规模清理（2025-10-31），删除了 37+ 个无用文件：
 
-- ✅ 保留: 核心系统、配置文件、文档、源码
-- ❌ 删除: 所有实验版本和临时分析文件
-- 📁 重组: 按功能分类到不同目录
+- ❌ 删除: 11个测试文件、16个临时文档、4个无用组件、2个废弃工具
+- ✅ 保留: 核心功能代码、系统设计文档、配置文件
+- 📁 详情: 查看 `PROJECT_CLEANUP.md`
 
-### 系统演进
+### 代码规范
 
-1. **早期**: 简单线性增长
-2. **中期**: 分段线性衰减
-3. **后期**: 指数衰减尝试
-4. **最终**: 超精细分段线性插值 (当前版本)
+- 使用 ES6+ 语法
+- 组件使用 Composition API
+- 统一使用 `import` 而非 `require`
+- 遵循 Vue 3 最佳实践
+
+### 文档
+
+详细的系统设计文档位于 `docs/` 目录：
+- `GAME_DESIGN.md` - 游戏设计
+- `BATTLE_SYSTEM.md` - 战斗系统
+- `BREAKTHROUGH_SYSTEM.md` - 突破系统
+- `TALENT_SYSTEM.md` - 天赋系统
+- `MERIDIAN_SYSTEM.md` - 经脉系统
+- `SPIRIT_RING_SYSTEM.md` - 仙灵环系统
+- `IMMORTAL_RANKING_SYSTEM.md` - 仙战榜系统
+- 等等...
 
 ## 🤝 贡献
 
