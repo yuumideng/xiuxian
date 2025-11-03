@@ -14,7 +14,7 @@ export const useGameStore = defineStore('game', {
     player: {
       name: '道友',
       level: 1, // 当前境界等级
-      age: 16, // 年龄
+      age: 16 * 365, // 年龄（以天为单位，16岁 = 5840天）
       
       // 资源
       jade: 0, // 仙玉
@@ -28,7 +28,7 @@ export const useGameStore = defineStore('game', {
       spiritStoneSpeed: 1, // 灵石获取速度/秒
       baseExpSpeed: 1, // 基础修为增长速度/秒
       baseCombatSpeed: 1, // 基础战斗经验增长速度/秒
-      gameSpeed: 1, // 游戏整体速度倍率
+      gameSpeed: 215490, // 游戏速度（天/秒）
       
       // 天赋属性（初始值40点）
       talents: {
@@ -52,7 +52,27 @@ export const useGameStore = defineStore('game', {
       },
       
       // 仙战榜（随机加成系统）
-      immortalRanking: initializeImmortalRanking(1)
+      immortalRanking: initializeImmortalRanking(1),
+      
+      // 天劫系统
+      tianJie: {
+        currentFloor: 0, // 当前大境界已通过的天劫层数
+        currentRealmLevel: 1, // 当前天劫所属的大境界等级（1=练气，2=筑基，3=金丹...）
+        realmFloors: {}, // 记录每个大境界的最高通过层数 { 1: 50, 2: 100, 3: 150 }
+        nextPassiveTime: 10000 * 365, // 下次被动天劫降临时间（天）
+        passiveInterval: 10000 * 365, // 被动天劫间隔（10000年 = 3650000天）
+        isPassiveTriggered: false, // 是否触发被动天劫（游戏暂停）
+        totalChallenges: 0, // 总挑战次数
+        totalVictories: 0, // 总胜利次数
+        totalDefeats: 0 // 总失败次数
+      },
+      
+      // 心魔劫系统（暂未实现，预留数据结构）
+      xinMo: {
+        currentFloor: 0,
+        currentRealmLevel: 1,
+        realmFloors: {}
+      }
     },
     
     // 游戏状态
@@ -156,6 +176,39 @@ export const useGameStore = defineStore('game', {
     // 仙战榜详细信息
     immortalRankingDetails: (state) => {
       return getImmortalRankingDetails(state.player.immortalRanking)
+    },
+    
+    // 天劫剩余时间（年）
+    tianJieRemainingYears: (state) => {
+      if (!state.player.tianJie || state.player.tianJie.nextPassiveTime === undefined) {
+        return 10000
+      }
+      return Math.floor(state.player.tianJie.nextPassiveTime / 365)
+    },
+    
+    // 天劫剩余天数
+    tianJieRemainingDays: (state) => {
+      if (!state.player.tianJie || state.player.tianJie.nextPassiveTime === undefined) {
+        return 0
+      }
+      return Math.floor(state.player.tianJie.nextPassiveTime % 365)
+    },
+    
+    // 当前大境界等级
+    currentRealmLevel: (state) => {
+      return Math.floor((state.player.level - 1) / 10) + 1
+    },
+    
+    // 当前天劫层数（考虑境界变化）
+    currentTianJieFloor: (state) => {
+      const currentRealmLevel = Math.floor((state.player.level - 1) / 10) + 1
+      
+      // 如果境界发生变化，返回0（需要重新开始）
+      if (state.player.tianJie.currentRealmLevel !== currentRealmLevel) {
+        return 0
+      }
+      
+      return state.player.tianJie.currentFloor
     }
   },
   
@@ -200,8 +253,20 @@ export const useGameStore = defineStore('game', {
       this.player.exp += gains.exp
       this.player.combat += gains.combat
       
+      // 年龄增长（根据游戏速度）
+      const ageDays = this.player.gameSpeed * seconds
+      this.player.age += ageDays
+      
+      // 更新天劫倒计时
+      this.player.tianJie.nextPassiveTime -= ageDays
+      
+      // 检查是否触发被动天劫
+      if (this.player.tianJie.nextPassiveTime <= 0 && !this.player.tianJie.isPassiveTriggered) {
+        this.triggerPassiveTianJie()
+      }
+      
       // 更新时间进度 (每秒增加13%)
-      this.gameState.timeProgress += 13 * seconds * this.player.gameSpeed
+      this.gameState.timeProgress += 13 * seconds
       // 进度条可以超过100%，通过取模实现循环效果
       if (this.gameState.timeProgress >= 100) {
         this.gameState.timeProgress = this.gameState.timeProgress % 100
@@ -236,8 +301,8 @@ export const useGameStore = defineStore('game', {
       this.player.level++
       const newLevel = this.player.level
       
-      // 年龄增长
-      this.player.age += Math.floor(Math.random() * 10) + 1
+      // 年龄增长（现在由游戏速度系统自动控制，不再在突破时增长）
+      // this.player.age += Math.floor(Math.random() * 10) + 1
       
       // 属性提升(简单的线性增长)
       this.player.baseExpSpeed = Math.floor(this.player.baseExpSpeed * 1.2)
@@ -340,6 +405,18 @@ export const useGameStore = defineStore('game', {
             this.player.baseCombatSpeed = 1 // 重置为基础值，让新公式计算
           }
           
+          // 兼容旧存档：修正游戏速度（旧存档中 gameSpeed 是倍率，新版本是天/秒）
+          if (this.player.gameSpeed && this.player.gameSpeed < 1000) {
+            this.player.gameSpeed = 215490 // 重置为默认游戏速度
+            console.log('检测到旧版本游戏速度，已重置为默认值：215490天/秒')
+          }
+          
+          // 兼容旧存档：将年龄转换为天数（如果是岁数）
+          if (this.player.age && this.player.age < 1000) {
+            this.player.age = this.player.age * 365 // 转换为天数
+            console.log('检测到旧版本年龄格式，已转换为天数')
+          }
+          
           // 兼容旧存档：补全缺失的仙战榜数据
           if (this.player.immortalRanking) {
             const currentLevel = this.player.level
@@ -363,6 +440,58 @@ export const useGameStore = defineStore('game', {
             console.log(`初始化仙战榜数据到第${currentRealmLevel}境`)
           }
           
+          // 兼容旧存档：补全天劫数据
+          if (!this.player.tianJie) {
+            const currentRealmLevel = Math.floor((this.player.level - 1) / 10) + 1
+            this.player.tianJie = {
+              currentFloor: 0,
+              currentRealmLevel: currentRealmLevel,
+              realmFloors: {},
+              nextPassiveTime: 10000 * 365,
+              passiveInterval: 10000 * 365,
+              isPassiveTriggered: false,
+              totalChallenges: 0,
+              totalVictories: 0,
+              totalDefeats: 0
+            }
+            console.log('初始化天劫数据')
+          }
+          
+          // 兼容旧存档：补全新增的天劫字段
+          if (this.player.tianJie.currentRealmLevel === undefined) {
+            const currentRealmLevel = Math.floor((this.player.level - 1) / 10) + 1
+            this.player.tianJie.currentRealmLevel = currentRealmLevel
+            console.log(`补全天劫境界等级字段：${currentRealmLevel}`)
+          }
+          if (this.player.tianJie.realmFloors === undefined) {
+            this.player.tianJie.realmFloors = {}
+            console.log('补全天劫境界记录字段')
+          }
+          
+          // 兼容旧存档：补全心魔劫数据
+          if (!this.player.xinMo) {
+            const currentRealmLevel = Math.floor((this.player.level - 1) / 10) + 1
+            this.player.xinMo = {
+              currentFloor: 0,
+              currentRealmLevel: currentRealmLevel,
+              realmFloors: {}
+            }
+            console.log('初始化心魔劫数据')
+          }
+          
+          // 修复负数的天劫倒计时
+          if (this.player.tianJie.nextPassiveTime < 0) {
+            console.log(`检测到天劫倒计时为负数(${this.player.tianJie.nextPassiveTime}天)，重置为默认值`)
+            this.player.tianJie.nextPassiveTime = this.player.tianJie.passiveInterval || 10000 * 365
+            this.player.tianJie.isPassiveTriggered = false
+          }
+          
+          // 修复暂停状态：如果被动天劫没有触发但游戏被暂停了，恢复游戏
+          if (this.gameState.isPaused && !this.player.tianJie.isPassiveTriggered) {
+            console.log('检测到异常暂停状态，恢复游戏')
+            this.gameState.isPaused = false
+          }
+          
           // 如果有离线时间,设置为离线状态
           if (saveData.saveTime) {
             this.gameState.lastOfflineTime = saveData.saveTime
@@ -382,7 +511,7 @@ export const useGameStore = defineStore('game', {
       this.player = {
         name: '道友',
         level: 1,
-        age: 16,
+        age: 16 * 365, // 年龄（以天为单位）
         jade: 0,
         spiritStone: 100,
         exp: 0,
@@ -390,7 +519,7 @@ export const useGameStore = defineStore('game', {
         spiritStoneSpeed: 1,
         baseExpSpeed: 1,
         baseCombatSpeed: 1,
-        gameSpeed: 1,
+        gameSpeed: 215490, // 游戏速度（天/秒）
         talents: {
           qigan: 40,
           shishi: 40,
@@ -408,7 +537,23 @@ export const useGameStore = defineStore('game', {
           lei: 50,
           guang: 100
         },
-        immortalRanking: initializeImmortalRanking(1)
+        immortalRanking: initializeImmortalRanking(1),
+        tianJie: {
+          currentFloor: 0,
+          currentRealmLevel: 1,
+          realmFloors: {},
+          nextPassiveTime: 10000 * 365,
+          passiveInterval: 10000 * 365,
+          isPassiveTriggered: false,
+          totalChallenges: 0,
+          totalVictories: 0,
+          totalDefeats: 0
+        },
+        xinMo: {
+          currentFloor: 0,
+          currentRealmLevel: 1,
+          realmFloors: {}
+        }
       }
       
       // 重置游戏状态
@@ -426,10 +571,79 @@ export const useGameStore = defineStore('game', {
         startTime: null
       }
       
-      // 清除本地存储
-      localStorage.removeItem('xiuxian-game-save')
+      // 清除本地存储（包括所有存档槽位）
+      localStorage.clear()
       
       console.log('游戏已重置到初始状态')
-    }
+    },
+    
+    // ==================== 天劫系统 ====================
+    
+    // 触发被动天劫
+    triggerPassiveTianJie() {
+      this.player.tianJie.isPassiveTriggered = true
+      this.gameState.isPaused = true
+      console.log('被动天劫降临！游戏暂停')
+    },
+    
+    // 主动挑战天劫成功
+    activeTianJieSuccess(floor) {
+      const currentRealmLevel = Math.floor((this.player.level - 1) / 10) + 1
+      
+      // 检查是否切换了大境界
+      if (this.player.tianJie.currentRealmLevel !== currentRealmLevel) {
+        // 保存旧境界的最高记录
+        if (this.player.tianJie.currentFloor > 0) {
+          this.player.tianJie.realmFloors[this.player.tianJie.currentRealmLevel] = this.player.tianJie.currentFloor
+        }
+        
+        // 切换到新境界，重置层数
+        this.player.tianJie.currentRealmLevel = currentRealmLevel
+        this.player.tianJie.currentFloor = 0
+        console.log(`进入新的大境界（境界${currentRealmLevel}），天劫层数已重置`)
+      }
+      
+      const oldFloor = this.player.tianJie.currentFloor
+      this.player.tianJie.currentFloor = Math.max(this.player.tianJie.currentFloor, floor)
+      this.player.tianJie.totalChallenges++
+      this.player.tianJie.totalVictories++
+      
+      // 如果通过了新的层数，累加时间
+      if (floor > oldFloor) {
+        const addedFloors = floor - oldFloor
+        const addedTime = addedFloors * this.player.tianJie.passiveInterval
+        this.player.tianJie.nextPassiveTime += addedTime
+        console.log(`主动天劫第${floor}劫挑战成功！累加${addedTime}天，下次被动天劫还需${this.player.tianJie.nextPassiveTime}天`)
+      } else {
+        console.log(`主动天劫第${floor}劫挑战成功！`)
+      }
+    },
+    
+    // 主动挑战天劫失败
+    activeTianJieFailure() {
+      this.player.tianJie.totalChallenges++
+      this.player.tianJie.totalDefeats++
+      console.log('主动天劫挑战失败')
+    },
+    
+    // 被动天劫挑战成功
+    passiveTianJieSuccess() {
+      const nextFloor = this.player.tianJie.currentFloor + 1
+      this.player.tianJie.currentFloor = nextFloor
+      this.player.tianJie.totalChallenges++
+      this.player.tianJie.totalVictories++
+      this.player.tianJie.isPassiveTriggered = false
+      
+      // 设置下次被动天劫时间：从现在开始，再过10000年
+      this.player.tianJie.nextPassiveTime = this.player.tianJie.passiveInterval
+      
+      // 恢复游戏
+      this.gameState.isPaused = false
+      
+      console.log(`被动天劫第${nextFloor}劫挑战成功！游戏继续，下次天劫在${this.player.tianJie.passiveInterval}天后`)
+    },
+    
+
+
   }
 })

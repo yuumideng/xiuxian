@@ -4,9 +4,10 @@
       <h3 class="text-sm font-medium">战斗数据</h3>
       <button 
         class="detail-btn"
+        title="战斗属性加成详情"
         @click="showDetailModal = true"
       >
-        加成详情
+        📊
       </button>
     </div>
 
@@ -27,6 +28,7 @@
     <Modal 
       v-model="showDetailModal" 
       title="战斗属性加成详情"
+      position="bottom"
       :close-on-click-outside="true"
     >
       <BattleAttributeDetail :player="gameStore.player" />
@@ -52,25 +54,27 @@ const showDetailModal = ref(false)
 
 <style scoped>
 .detail-btn {
-  padding: 0.125rem 0.5rem;
+  padding: 0.125rem 0.25rem;
   font-size: 0.75rem;
-  color: #2563eb;
+  line-height: 1;
   background-color: #eff6ff;
   border: 1px solid #bfdbfe;
   border-radius: 0.25rem;
   cursor: pointer;
   transition: all 0.2s;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .detail-btn:hover {
   background-color: #dbeafe;
   border-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
 }
 
 .detail-btn:active {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
-
-
 </style>

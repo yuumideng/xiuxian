@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import SaveSelect from '../views/SaveSelect.vue'
 import CreateCharacter from '../views/CreateCharacter.vue'
 import Home from '../views/Home.vue'
+import TianJieBattle from '../views/TianJieBattle.vue'
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/game',
     name: 'Game',
     component: Home
+  },
+  {
+    path: '/tianjie-battle',
+    name: 'TianJieBattle',
+    component: TianJieBattle
   }
 ]
 

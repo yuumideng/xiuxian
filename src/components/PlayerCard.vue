@@ -12,7 +12,7 @@
               <div class="text-4xl">🧘</div>
             </div>
           </div>
-          <div class="bg-gray-800 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
+          <div class="bg-gray-800 text-white text-xs px-2 py-0.5 rounded">
             历练信息
           </div>
         </div>
@@ -20,15 +20,24 @@
         <!-- 角色属性 -->
         <div class="space-y-0.5 text-xs">
           <div class="text-purple-500">姓名：{{ gameStore.player.name }}</div>
-          <div class="text-gray-700">年龄：<span class="text-blue-600">{{ gameStore.player.age }}岁</span></div>
+          <div class="text-gray-700">年龄：<span class="text-blue-600">{{ displayAge }}</span></div>
           <div class="text-gray-700">{{ currentWorld }}：{{ currentRealm?.fullName || '未知境界' }}</div>
-          <div class="text-gray-700">战斗力：<span class="text-orange-500">{{ formatNumber(calculatePower) }}</span></div>
+          <div class="text-gray-700 flex items-center justify-between">
+            <span>战斗力：<span class="text-orange-500">{{ formatNumber(calculatePower) }}</span></span>
+            <button 
+              class="detail-btn"
+              title="修炼速度详情"
+              @click="handleShowDetail"
+            >
+              📊
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- 右侧：历练区域 -->
       <div class="bg-white rounded p-3">
-        <div class="text-xs text-gray-600 mb-3">历练区域：鸿蒙平原(第220/220层)</div>
+        <div class="text-xs text-gray-600 mb-3">历练区域：鸿蒙平原(第{{ trainingLevels }}/{{ trainingLevels }}层)</div>
 
         <!-- 秘境挑战 -->
         <div class="bg-gray-800 text-white rounded p-2">
@@ -116,9 +125,9 @@
 
       <!-- 右侧：2个劫按钮 -->
       <div class="grid grid-cols-2 gap-1.5 flex-1">
-        <GameButton color="red" custom-class="flex-col">
+        <GameButton color="red" custom-class="flex-col" @click="showTianJieModal = true">
           <span>天道轮回劫</span>
-          <span class="text-xs mt-0.5">第1163劫</span>
+          <span class="text-xs mt-0.5">第{{ gameStore.currentTianJieFloor + 1 }}劫</span>
         </GameButton>
         <GameButton color="dark" custom-class="flex-col !px-0.5">
           <span>鸿蒙元尊心魔劫</span>
@@ -126,17 +135,33 @@
         </GameButton>
       </div>
     </div>
+
+    <!-- 加成详情弹窗 -->
+    <GrowthSpeedDetail 
+      :show="showGrowthSpeedDetail" 
+      @close="showGrowthSpeedDetail = false" 
+    />
+    
+    <!-- 天劫弹窗 -->
+    <TianJieModal v-model="showTianJieModal" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useGameStore } from '@/store/gameState.js'
 import { getWorldByLevel } from '@/data/realms.js'
 import { formatNumber } from '@/utils/numberFormatter.js'
+import { getTrainingLevels } from '@/utils/growthCalculator.js'
 import GameButton from './common/GameButton.vue'
+import GrowthSpeedDetail from './GrowthSpeedDetail.vue'
+import TianJieModal from './TianJieModal.vue'
 
 const gameStore = useGameStore()
+
+// 弹窗状态
+const showGrowthSpeedDetail = ref(false)
+const showTianJieModal = ref(false)
 
 // 计算属性
 const currentRealm = computed(() => gameStore.currentRealm)
@@ -145,17 +170,28 @@ const currentWorld = computed(() => getWorldByLevel(gameStore.player.level))
 // 使用新的战斗力计算系统
 const calculatePower = computed(() => gameStore.battlePower)
 
+// 计算历练层数
+const trainingLevels = computed(() => getTrainingLevels(gameStore.player.level))
+
+// 年龄显示（天数转换为年）
+const displayAge = computed(() => {
+  const totalDays = Math.floor(gameStore.player.age) // 取整避免小数
+  const years = Math.floor(totalDays / 365)
+  const days = totalDays % 365
+  return `${years}年${days}天`
+})
+
 // 获取指数显示（用于上标）
+// 由于现在低于亿的数值直接显示完整数字，不再需要上角标
 const getExponentDisplay = (value) => {
-  if (value < 10000) return ''
-  
-  const absValue = Math.abs(value)
-  const exponent = Math.floor(Math.log10(absValue) / 4)
-  
-  if (exponent > 0) {
-    return exponent
-  }
   return ''
+}
+
+// 显示加成详情
+const handleShowDetail = () => {
+  console.log('点击了加成详情按钮')
+  showGrowthSpeedDetail.value = true
+  console.log('showGrowthSpeedDetail:', showGrowthSpeedDetail.value)
 }
 
 // 渡劫飞升功能（每次点击只突破一次）
@@ -172,4 +208,29 @@ const handleBreakthrough = () => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.detail-btn {
+  padding: 0.125rem 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-btn:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+}
+
+.detail-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+</style>

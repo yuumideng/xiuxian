@@ -1,10 +1,34 @@
 // 修为和战斗经验增长速率计算器
 // 公式: result = A*(1+修为/战斗经验加成)*吸收效率*(1+修为/战斗经验倍率)
 // A = (1+境界系数)*(1+当前境界历练层数)*(1+轮回加成)
+// 修为/战斗经验加成 = 天赋加成 + 经脉加成 + 仙战榜加成（无基础值）
 
 import { calculateCultivationSpeedBonuses as calculateTalentSpeedBonuses } from './talentSystem.js'
 import { calculateCultivationSpeedBonuses as calculateMeridianSpeedBonuses } from './meridianSystem.js'
 import { calculateCultivationSpeedBonuses as calculateImmortalRankingSpeedBonuses } from './immortalRankingSystem.js'
+
+/**
+ * 计算历练层数
+ * 
+ * 规则：
+ * - 练气期（大境界1）：20层
+ * - 筑基期（大境界2）：25层
+ * - 金丹期（大境界3）：30层
+ * - 元婴期（大境界4）：35层
+ * - 化神期（大境界5）：40层
+ * 
+ * 公式：初始20层，每提升一个大境界 +5层
+ * 
+ * @param {number} level - 玩家等级
+ * @returns {number} 历练层数
+ */
+export function getTrainingLevels(level) {
+  // 计算大境界级别（每10个小等级为一个大境界）
+  const realmLevel = Math.floor((level - 1) / 10) + 1
+  
+  // 初始20层，每个大境界 +5层
+  return 20 + (realmLevel - 1) * 5
+}
 
 /**
  * 境界系数配置（新版本 - 指数增长）
@@ -67,10 +91,10 @@ export function getRealmCoefficient(level) {
  */
 export function calculateExpGrowthRate(player, baseSpeed) {
   // 配置参数 - 按照用户原始要求
-  let expBonus = 10000; // 修为加成（基础值）
+  let expBonus = 0; // 修为加成（基础值改为0，完全依赖天赋、经脉、仙战榜）
   const absorptionEfficiency = 1; // 吸收效率
   const expMultiplier = 2; // 修为倍率
-  const currentTrainingLevel = 200; // 当前境界历练层数
+  const currentTrainingLevel = getTrainingLevels(player.level); // 当前境界历练层数（动态计算）
   const reincarnationBonus = 100; // 轮回加成
   
   // 计算天赋加成
@@ -111,10 +135,10 @@ export function calculateExpGrowthRate(player, baseSpeed) {
  */
 export function calculateCombatGrowthRate(player, baseSpeed) {
   // 配置参数 - 按照用户原始要求
-  let combatBonus = 10000; // 战斗经验加成（基础值）
+  let combatBonus = 0; // 战斗经验加成（基础值改为0，完全依赖天赋、经脉、仙战榜）
   const absorptionEfficiency = 1; // 吸收效率
   const combatMultiplier = 2; // 战斗经验倍率
-  const currentTrainingLevel = 200; // 当前境界历练层数
+  const currentTrainingLevel = getTrainingLevels(player.level); // 当前境界历练层数（动态计算）
   const reincarnationBonus = 100; // 轮回加成
   
   // 计算天赋加成
@@ -154,21 +178,41 @@ export function calculateCombatGrowthRate(player, baseSpeed) {
  */
 export function getGrowthRateDetails(player) {
   const realmCoefficient = getRealmCoefficient(player.level);
-  const currentTrainingLevel = 200;
+  const currentTrainingLevel = getTrainingLevels(player.level); // 动态计算历练层数
   const reincarnationBonus = 100;
   const A = (1 + realmCoefficient) * (1 + currentTrainingLevel) * (1 + reincarnationBonus);
+  
+  // 计算实际的加成值
+  let expBonus = 0;
+  let combatBonus = 0;
+  
+  if (player.talents) {
+    const talentBonuses = calculateTalentSpeedBonuses(player.talents, player.level)
+    expBonus += talentBonuses.expSpeed || 0
+    combatBonus += talentBonuses.combatSpeed || 0
+  }
+  
+  const meridianBonuses = calculateMeridianSpeedBonuses(player.level)
+  expBonus += meridianBonuses.expSpeed || 0
+  combatBonus += meridianBonuses.combatSpeed || 0
+  
+  if (player.immortalRanking) {
+    const immortalRankingBonuses = calculateImmortalRankingSpeedBonuses(player.immortalRanking)
+    expBonus += immortalRankingBonuses.expSpeed || 0
+    combatBonus += immortalRankingBonuses.combatSpeed || 0
+  }
   
   return {
     realmCoefficient,
     currentTrainingLevel,
     reincarnationBonus,
     A,
-    expBonus: 10000,
-    combatBonus: 10000,
+    expBonus,
+    combatBonus,
     absorptionEfficiency: 1,
     expMultiplier: 2,
     combatMultiplier: 2,
-    expFinalMultiplier: A * (1 + 10000) * 1 * (1 + 2),
-    combatFinalMultiplier: A * (1 + 10000) * 1 * (1 + 2)
+    expFinalMultiplier: A * (1 + expBonus) * 1 * (1 + 2),
+    combatFinalMultiplier: A * (1 + combatBonus) * 1 * (1 + 2)
   };
 }

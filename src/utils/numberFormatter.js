@@ -3,15 +3,13 @@
  * 按照中文计数习惯格式化数字
  * 
  * 规则：
- * - 低于万：直接显示数字
- * - 万到亿：显示xxx万，保留两位有效数字
+ * - 低于亿：直接显示完整数字
  * - 亿以上：使用亿、亿亿、亿亿亿等单位，保留两位有效数字
  */
 
 /**
  * 格式化数字为中文计数方式
  * 规则：
- * - 万 (1e4)
  * - 亿 (1e8)
  * - 万亿 (1e12)
  * - 亿亿 (1e16)
@@ -29,15 +27,9 @@ export function formatChineseNumber(num) {
   if (num === 0) return '0'
   if (num < 0) return '-' + formatChineseNumber(-num)
   
-  // 低于万的数值，直接展示数字
-  if (num < 10000) {
-    return Math.floor(num).toLocaleString()
-  }
-  
-  // 万到亿之间，展示xxx万
+  // 低于亿的数值，直接展示完整数字
   if (num < 100000000) { // 1亿 = 100,000,000
-    const wanValue = num / 10000
-    return formatTwoSignificantDigits(wanValue) + '万'
+    return Math.floor(num).toString()
   }
   
   // 亿以上，使用完整的单位体系：万、亿、万亿、亿亿、万亿亿...

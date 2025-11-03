@@ -1,22 +1,6 @@
 <template>
   <Modal v-model="isOpen" title="游戏设置">
     <div class="settings-content">
-      <!-- 游戏速度设置 -->
-      <div class="setting-section">
-        <h4 class="section-title">游戏速度</h4>
-        <div class="speed-buttons">
-          <button
-            v-for="speed in speedOptions"
-            :key="speed"
-            class="speed-btn"
-            :class="{ active: gameStore.player.gameSpeed === speed }"
-            @click="setGameSpeed(speed)"
-          >
-            {{ speed }}x
-          </button>
-        </div>
-      </div>
-
       <!-- 危险操作区 -->
       <div class="setting-section danger-zone">
         <h4 class="section-title danger">危险操作</h4>
@@ -54,14 +38,6 @@ const gameStore = useGameStore()
 
 // 控制弹窗显示
 const isOpen = defineModel({ type: Boolean, default: false })
-
-// 速度选项
-const speedOptions = [1, 2, 5, 10, 20, 50, 100]
-
-// 设置游戏速度
-const setGameSpeed = (speed) => {
-  gameStore.player.gameSpeed = speed
-}
 
 // 确认重置
 const confirmReset = () => {

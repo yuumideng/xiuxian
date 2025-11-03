@@ -1,8 +1,8 @@
 <template>
   <Teleport to="body">
-    <Transition name="modal">
-      <div v-if="modelValue" class="modal-overlay" @click="handleOverlayClick">
-        <div class="modal-container" @click.stop>
+    <Transition :name="position === 'bottom' ? 'modal-bottom' : 'modal'">
+      <div v-if="modelValue" class="modal-overlay" :class="{ 'modal-overlay-bottom': position === 'bottom' }" @click="handleOverlayClick">
+        <div class="modal-container" :class="{ 'modal-container-bottom': position === 'bottom' }" :style="width ? { maxWidth: `${width}px` } : {}" @click.stop>
           <!-- 装饰性背景 -->
           <div class="modal-decoration"></div>
           
@@ -44,6 +44,15 @@ const props = defineProps({
   closeOnClickOutside: {
     type: Boolean,
     default: true
+  },
+  position: {
+    type: String,
+    default: 'center', // 'center' 或 'bottom'
+    validator: (value) => ['center', 'bottom'].includes(value)
+  },
+  width: {
+    type: Number,
+    default: null // 默认不设置，使用100%
   }
 })
 
@@ -292,15 +301,50 @@ watch(() => props.modelValue, (newVal) => {
   background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
 }
 
+/* 底部弹出样式 */
+.modal-overlay-bottom {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.modal-container-bottom {
+  max-width: 100%;
+  width: 100%;
+  max-height: 70vh;
+  border-radius: 1rem 1rem 0 0;
+  margin: 0;
+}
+
+/* 底部弹出动画 */
+.modal-bottom-enter-active,
+.modal-bottom-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.modal-bottom-enter-active .modal-container,
+.modal-bottom-leave-active .modal-container {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-bottom-enter-from,
+.modal-bottom-leave-to {
+  opacity: 0;
+}
+
+.modal-bottom-enter-from .modal-container,
+.modal-bottom-leave-to .modal-container {
+  transform: translateY(100%);
+}
+
 /* 响应式 */
 @media (min-width: 640px) {
-  .modal-container {
+  .modal-container:not(.modal-container-bottom) {
     max-width: 600px;
   }
 }
 
 @media (min-width: 768px) {
-  .modal-container {
+  .modal-container:not(.modal-container-bottom) {
     max-width: 700px;
   }
 }

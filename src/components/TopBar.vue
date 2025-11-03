@@ -27,8 +27,8 @@
       
       <!-- 内容层 -->
       <div class="relative z-10 text-gray-700">
-        第<span class="font-medium">{{ gameStore.player.age }}</span>岁
-        <span class="text-gray-500">(速度x{{ gameStore.player.gameSpeed }})</span>
+        第<span class="font-medium">{{ displayAge }}</span>年
+        <span class="text-gray-500">({{ formatNumber(gameStore.player.gameSpeed) }}天/秒)</span>
       </div>
       <div class="relative z-10 flex items-center gap-2">
         <!-- 暂停状态显示 -->
@@ -66,18 +66,29 @@
       </div>
     </div>
     
-    <!-- 设置弹窗 -->
-    <SettingsModal v-model="showSettingsModal" />
+    <!-- 游戏速度设置弹窗 -->
+    <GameSpeedSetting 
+      :show="showSettingsModal" 
+      @close="showSettingsModal = false"
+      @speed-change="handleSpeedChange"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useGameStore } from '@/store/gameState.js'
 import { formatNumber } from '@/utils/numberFormatter.js'
-import SettingsModal from './SettingsModal.vue'
+import GameSpeedSetting from './GameSpeedSetting.vue'
 
 const gameStore = useGameStore()
+
+// 年龄显示（天数转换为年）
+const displayAge = computed(() => {
+  const totalDays = Math.floor(gameStore.player.age) // 取整避免小数
+  const years = Math.floor(totalDays / 365)
+  return years
+})
 
 // 控制设置弹窗显示
 const showSettingsModal = ref(false)
@@ -96,6 +107,12 @@ const buyResources = () => {
 // 打开设置
 const openSettings = () => {
   showSettingsModal.value = true
+}
+
+// 处理游戏速度变化
+const handleSpeedChange = (newSpeed) => {
+  gameStore.player.gameSpeed = newSpeed
+  console.log('游戏速度已更新:', newSpeed, '天/秒')
 }
 </script>
 

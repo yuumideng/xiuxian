@@ -106,7 +106,7 @@
         <span>成就</span>
         <span>系统</span>
       </GameButton>
-      <GameButton color="dark" custom-class="flex-col">
+      <GameButton color="dark" custom-class="flex-col" @click="openSettings">
         <span>游戏</span>
         <span>设置</span>
       </GameButton>
@@ -123,10 +123,23 @@
       <span>ios VIP v10.24(3)</span>
     </div>
   </div>
+  
+  <!-- 游戏设置弹窗 -->
+  <SettingsModal v-model="showSettingsModal" />
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import GameButton from './common/GameButton.vue'
+import SettingsModal from './SettingsModal.vue'
+
+// 控制设置弹窗显示
+const showSettingsModal = ref(false)
+
+// 打开设置
+const openSettings = () => {
+  showSettingsModal.value = true
+}
 </script>
 
 <style scoped></style>

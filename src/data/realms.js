@@ -118,7 +118,7 @@ export const REALMS = {
       { level: 89, name: '灵虚后期巅峰', fullName: '灵虚后期巅峰' },
       { level: 90, name: '灵虚大圆满', fullName: '灵虚大圆满' },
       
-      // 继续其他灵界境界...
+      // 灵魄境 (91-100级)
       { level: 91, name: '灵魄初期', fullName: '灵魄初期' },
       { level: 92, name: '灵魄初期大成', fullName: '灵魄初期大成' },
       { level: 93, name: '灵魄初期巅峰', fullName: '灵魄初期巅峰' },
@@ -128,7 +128,79 @@ export const REALMS = {
       { level: 97, name: '灵魄后期', fullName: '灵魄后期' },
       { level: 98, name: '灵魄后期大成', fullName: '灵魄后期大成' },
       { level: 99, name: '灵魄后期巅峰', fullName: '灵魄后期巅峰' },
-      { level: 100, name: '灵魄大圆满', fullName: '灵魄大圆满' }
+      { level: 100, name: '灵魄大圆满', fullName: '灵魄大圆满' },
+      
+      // 灵婴境 (101-110级)
+      { level: 101, name: '灵婴初期', fullName: '灵婴初期' },
+      { level: 102, name: '灵婴初期大成', fullName: '灵婴初期大成' },
+      { level: 103, name: '灵婴初期巅峰', fullName: '灵婴初期巅峰' },
+      { level: 104, name: '灵婴中期', fullName: '灵婴中期' },
+      { level: 105, name: '灵婴中期大成', fullName: '灵婴中期大成' },
+      { level: 106, name: '灵婴中期巅峰', fullName: '灵婴中期巅峰' },
+      { level: 107, name: '灵婴后期', fullName: '灵婴后期' },
+      { level: 108, name: '灵婴后期大成', fullName: '灵婴后期大成' },
+      { level: 109, name: '灵婴后期巅峰', fullName: '灵婴后期巅峰' },
+      { level: 110, name: '灵婴大圆满', fullName: '灵婴大圆满' },
+      
+      // 灵神境 (111-120级)
+      { level: 111, name: '灵神初期', fullName: '灵神初期' },
+      { level: 112, name: '灵神初期大成', fullName: '灵神初期大成' },
+      { level: 113, name: '灵神初期巅峰', fullName: '灵神初期巅峰' },
+      { level: 114, name: '灵神中期', fullName: '灵神中期' },
+      { level: 115, name: '灵神中期大成', fullName: '灵神中期大成' },
+      { level: 116, name: '灵神中期巅峰', fullName: '灵神中期巅峰' },
+      { level: 117, name: '灵神后期', fullName: '灵神后期' },
+      { level: 118, name: '灵神后期大成', fullName: '灵神后期大成' },
+      { level: 119, name: '灵神后期巅峰', fullName: '灵神后期巅峰' },
+      { level: 120, name: '灵神大圆满', fullName: '灵神大圆满' },
+      
+      // 灵劫境 (121-130级)
+      { level: 121, name: '灵劫初期', fullName: '灵劫初期' },
+      { level: 122, name: '灵劫初期大成', fullName: '灵劫初期大成' },
+      { level: 123, name: '灵劫初期巅峰', fullName: '灵劫初期巅峰' },
+      { level: 124, name: '灵劫中期', fullName: '灵劫中期' },
+      { level: 125, name: '灵劫中期大成', fullName: '灵劫中期大成' },
+      { level: 126, name: '灵劫中期巅峰', fullName: '灵劫中期巅峰' },
+      { level: 127, name: '灵劫后期', fullName: '灵劫后期' },
+      { level: 128, name: '灵劫后期大成', fullName: '灵劫后期大成' },
+      { level: 129, name: '灵劫后期巅峰', fullName: '灵劫后期巅峰' },
+      { level: 130, name: '灵劫大圆满', fullName: '灵劫大圆满' },
+      
+      // 灵尊境 (131-140级)
+      { level: 131, name: '灵尊初期', fullName: '灵尊初期' },
+      { level: 132, name: '灵尊初期大成', fullName: '灵尊初期大成' },
+      { level: 133, name: '灵尊初期巅峰', fullName: '灵尊初期巅峰' },
+      { level: 134, name: '灵尊中期', fullName: '灵尊中期' },
+      { level: 135, name: '灵尊中期大成', fullName: '灵尊中期大成' },
+      { level: 136, name: '灵尊中期巅峰', fullName: '灵尊中期巅峰' },
+      { level: 137, name: '灵尊后期', fullName: '灵尊后期' },
+      { level: 138, name: '灵尊后期大成', fullName: '灵尊后期大成' },
+      { level: 139, name: '灵尊后期巅峰', fullName: '灵尊后期巅峰' },
+      { level: 140, name: '灵尊大圆满', fullName: '灵尊大圆满' },
+      
+      // 灵圣境 (141-150级)
+      { level: 141, name: '灵圣初期', fullName: '灵圣初期' },
+      { level: 142, name: '灵圣初期大成', fullName: '灵圣初期大成' },
+      { level: 143, name: '灵圣初期巅峰', fullName: '灵圣初期巅峰' },
+      { level: 144, name: '灵圣中期', fullName: '灵圣中期' },
+      { level: 145, name: '灵圣中期大成', fullName: '灵圣中期大成' },
+      { level: 146, name: '灵圣中期巅峰', fullName: '灵圣中期巅峰' },
+      { level: 147, name: '灵圣后期', fullName: '灵圣后期' },
+      { level: 148, name: '灵圣后期大成', fullName: '灵圣后期大成' },
+      { level: 149, name: '灵圣后期巅峰', fullName: '灵圣后期巅峰' },
+      { level: 150, name: '灵圣大圆满', fullName: '灵圣大圆满' },
+      
+      // 灵帝境 (151-160级)
+      { level: 151, name: '灵帝初期', fullName: '灵帝初期' },
+      { level: 152, name: '灵帝初期大成', fullName: '灵帝初期大成' },
+      { level: 153, name: '灵帝初期巅峰', fullName: '灵帝初期巅峰' },
+      { level: 154, name: '灵帝中期', fullName: '灵帝中期' },
+      { level: 155, name: '灵帝中期大成', fullName: '灵帝中期大成' },
+      { level: 156, name: '灵帝中期巅峰', fullName: '灵帝中期巅峰' },
+      { level: 157, name: '灵帝后期', fullName: '灵帝后期' },
+      { level: 158, name: '灵帝后期大成', fullName: '灵帝后期大成' },
+      { level: 159, name: '灵帝后期巅峰', fullName: '灵帝后期巅峰' },
+      { level: 160, name: '灵帝大圆满', fullName: '灵帝大圆满' }
     ]
   }
 }
@@ -332,7 +404,19 @@ export const getAllRealms = () => {
 // 根据等级获取境界信息
 export const getRealmByLevel = (level) => {
   const allRealms = getAllRealms()
-  return allRealms.find(realm => realm.level === level)
+  const realm = allRealms.find(realm => realm.level === level)
+  
+  // 如果找不到对应等级，返回一个默认值
+  if (!realm) {
+    console.warn(`未找到等级${level}对应的境界，使用默认值`)
+    return {
+      level: level,
+      name: `未知境界(${level}级)`,
+      fullName: `未知境界(${level}级)`
+    }
+  }
+  
+  return realm
 }
 
 // 根据等级获取所属界域
